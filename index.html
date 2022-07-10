@@ -2,21 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>ChenJieYaYa</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  
+  <link rel="stylesheet" href="/_media.css">
+  
+  <link rel="icon" href="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/img/favicon%20%281%29.ico">
+  <link rel="stylesheet" href="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert.min.css"
+    type='text/css' media='all' />
 </head>
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: '',
-      repo: ''
+      name: '<h3>Welcome ChenJieYaYa</h3>',//左上角标题
+      //repo: '',//GitHub Corner 挂件
+	  nameLink: '/',
+	  themeColor: '#2185d5',//主题颜色
+	  coverpage: true,//开启封面，从_coverpage.md中加载
+	  onlyCover: true,//只在访问主页时加载封面
+	  maxLevel: 3,//左侧只显示3级标题
+	  mergeNavbar: true,//Navbar将在小屏幕上与侧边栏合并
+	  loadNavbar: true,//导航栏
+	  auto2top: true,//更改路线时滚动到屏幕顶部
+	  topMargin: 60,//正文到顶部的距离
+	  executeScript: true,//执行页面上的脚本，仅解析第一个脚本标记，如果存在Vue，则默认情况下将启用它
+	  
+	  //添加搜索框，配合js
+	  search: {
+        paths: 'auto',
+        maxAge: 86400000, //过期时间，默认一天
+        placeholder: '🔍search',//默认提示
+        noData: 'No Result',//没有查到结果提示
+        depth: 6,//标题深度1-6
+      },
+	  
+	  //字数统计
+	  count: {
+        countable: true,
+        fontsize: '0.9em',
+        color: 'rgb(90,90,90)',
+        language: 'chinese'
+      },
+	  
+      formatUpdated: '{YYYY}/{MM}/{DD} {HH}:{mm}',//文件的更新的日期的格式
+	  //插件
+	  plugins: [
+        function (hook, vm) {
+          hook.beforeEach(function (html) {//每次解析MD文档之前调用一次
+            const url = 'https://github.com/ChenJieYaYa/chenjie-blog/blob/master/' + vm.route.file;
+            const editHtml = '[📝 EDIT DOCUMENT](' + url + ')\n';
+            return editHtml
+              + html
+              + '\n----\n'
+              + '> Last Modified {docsify-updated} '
+          })
+        },
+        function (hook) {
+          const footer = [//添加一个脚注件的每一页
+            '<footer>',
+            '<span>ChenJie &copy;2022. 每天一小步</span>',
+            '</footer>'
+          ].join('');
+
+          hook.afterEach(function (html) {//每次解析 Markdown 文件后调用
+            return html + footer;
+          });
+        }
+      ],
     }
   </script>
   <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- <script src="//cdn.jsdelivr.net/npm/docsify@4"></script> -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify.js"></script>
+  
+  <!-- 搜索 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/search.min.js"></script>
+  <!-- 字数统计 -->
+  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+  
+  <!-- 语言突出-高亮 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-bash.min.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-shell-session.min.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-java.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-textile.min.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-yaml.min.js"></script>
+  <script src="//polyfill.io/v3/polyfill.min.js?features=String.prototype.normalize"></script>
+  <!--<script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-cs.min.js"></script>-->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-templating.min.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-t4-vb.min.js"></script>
+  <!--<script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/prism-tsx.min.js"></script>-->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-sidebar-collapse.min.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/vue.min.js"></script>
+  
+  <!-- 图片缩放 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/zoom-image.min.js"></script>
+  
+  <!-- 分页 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-pagination.min.js"></script>
+  
+  <!-- 回到顶部 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.goup.js"></script>
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/emoji.min.js"></script>
+  
+  <!-- 代码复制 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/docsify-copy-code.min.js"></script>
+  <!-- 复制提醒 -->
+  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/sweetalert2%408.js"></script>
+  
+  <script type="text/javascript">
+	//
+    $(document).ready(function () {
+      $.goup({
+        trigger: 100,
+        bottomOffset: 52,
+        locationOffset: 25,
+        //title: 'TOP',
+        titleAsText: true
+      });
+    });
+
+    window.addEventListener("load", function (event) {
+      const buttons = document.getElementsByClassName("label");
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].innerHTML = '📃';
+      }
+      const bus = document.getElementsByClassName("success");
+      for (let i = 0; i < bus.length; i++) {
+        bus[i].innerHTML = "OK";
+      }
+    });
+  </script>
 </body>
 </html>
