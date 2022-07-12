@@ -1,147 +1,3 @@
-# JVM预习
-
-## 一、JDK, JRE, JVM
-
-首先贴图一张，虽然也看不太懂
-
-![JVM架构](https://img-blog.csdnimg.cn/0d9fd5cbb07b49b68b07dc51ce195ae0.png)
-
-### 1.JDK（编译环境）
-
-JDK = Java运行环境**JRE** + Java工具 + Java基础类库
-
-JDK的目录结构如下
-
-![1657457963561](assets/1657457963561.png)
-
-JDK是支持Java程序开发的最小环境，通常在安装好JDK之后，JRE也会自动安装好
-
-通常在安装好JDK之后，JRE也会自动安装好
-
-### 2.JRE（运行环境）
-
-JRE = JVM + Java类库API中的Java SE API子集 = **Java运行环境**
-
-JRE的目录结构如下，bin可理解为JVM，lib是该JVM工作所需要的类库
-
-![1657458295139](assets/1657458295139.png)
-
-JRE并不是开发环境，不包含任何开发工具(编译器或调试器等)，适合Java程序的用户
-
-### 3.JVM（平台软件）
-
-JVM就是Java虚拟机，只认识.class文件，负责将字节码解释成机器码，并提交到OS执行
-
-JVM是跨平台的核心，所有的Java程序先被编译成.class文件，.class文件可以在JVM上运行，屏蔽具体操作系统平台相关信息，使得Java程序只需生成在JVM上运行的目标代码（**字节码**），就可以在多种平台上不加修改地运行，即跨平台
-
-跨平台性指不同的浏览器安装不同的JVM，JVM将字节码与对应操作系统相映射，达到Java程序的跨平台性
-
-## 二、了解未来JDK的新技术发展（NO）
-
-模块化开发
-
-多语言开发，基于JVM的多语言，JVM上的语言不止Java，JVM只是一种规范
-
-多核并行
-
-64位的机器支持，对象数据对齐有一定问题，浪费大量空间
-
-更丰富的垃圾回收器
-
-## 三、VM有哪些类型？我们使用的是哪一种？有何特点? 
-
-### 1.VM类型
-
-**Sun classic VM**：世界上第一款商用JVM，只能使用**纯解释器**的方式来执行Java代码（已过时）
-
-**Exact VM**：全称Exact Memory Management(准确式内存管理)，即虚拟机可知道内存中某位置的数据是何内存，**编译器和解释器混合工作**，只在Solaris平台发布，还没在Windows等其他平台上发布就被HotSpotVm取代
-
-**Hotspot VM**：最初由小公司开发，后来被Sun公司收购，继承1.2款JVM的优点，增加热点代码探测等其他技术，应用最多（仍在使用）
-
-**KVM**：简单，轻量，高度可移植，在手机平台运行(嵌入式领域)
-
-**JRockit**：前面几种都出自Sun公司，而JRockit由BEA公司研发，后被Oracle收购，后来Sun公司也被Oracle收购，最快的JVM，专注服务器端应用，优势在于**垃圾回收器、MissionControl服务套件(用于内存管理，生产环境内存泄露问题)**
-
-**J9**：IBM公司研发，类似于Hotspot，不仅可以用于服务器端，还可以用于桌面应用、嵌入式
-
-**Dalvik**：没有遵循JVM规范，不能直接执行编译后的.class文件，用于移动端Android的JVM
-
-**Microsoft JVM**：微软开发，为了自家软件于Java兼容，只能运行在Windows，后来于Sun公司竞争失败（已消失）
-
-**Azul VM(专用的虚拟机)和Liquid VM(不需要操作系统支持)**：两款高性能JVM，碾压Hotspot
-高性能的java虚拟机
-
-**Taobao VM**：淘宝根据Hotspot深度定制的JVM，国产，对硬件依赖度高
-
-### 2.我们使用的是那种VM？（NO）
-
-**Hotspot VM**，有客户端模式与服务端模式，通过java -version可查
-
-```
-C:\Users\CJ>java -version
-java version "1.8.0_65"
-Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
-Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
-```
-
-### 3.VM特点
-
-**快速部署**：可通过克隆方式快速部署，能节省配置新虚拟机和安装操作系统的时间，保证虚拟机间的一致性
-
-**资源热添加**：虚拟机处于开机状态时，增加虚拟机的计算、存储、网络等资源
-
-**Console控制**：不依赖虚拟机的网络对虚拟机远程控制和管理
-
-**虚拟机快照**：虚拟机出现故障可通过虚拟机快速恢复
-
-...
-
-## 四、为什么叫JVM？与VMware的区别？
-
-### 1.为什么叫JVM？
-
-Java Virtual Machine，Java运行环境的一部分，执行Java字节码的虚拟计算机
-
-### 2.JVM与VMware的区别？（NO）
-
-VMware模拟CPU指令集，JVM模拟Java字节码指令集，模拟的层面不同
-
-## 五、JVM的整体架构？
-
-类装载器子系统、运行时数据区、执行引擎(模拟CPU运行)
-
-可通过执行引擎直接调用本地方法接口，也可以直接调用本地方法接口，本地方法接口属于OS
-
-![请添加图片描述](https://img-blog.csdnimg.cn/79da806c98364fe983fb20024264aca7.png)
-
-![加图片描述](https://img-blog.csdnimg.cn/220eea72cced4746b7a1fab3ab51aa84.png)
-
-## 六、字节码的加载流程
-
-[参考文章](https://blog.csdn.net/qq_45949008/article/details/119918269)
-
-### 1.Loading（加载）
-
-#### 1.1.加载理解
-
-加载简而言之就是**查找类的二进制数据，生成Java类的字节码文件，将Java类的字节码文件加载到机器内存，并在内存中构建出Java类原型（类模板对象）**
-
-类模板对象实际就是Java类在JVM内存中的快照，JVM从字节码文件中解析出常量池、类字段、类方法等信息存到类模板中，这要使JVM在运行期间能通过类模板获得Java类的任何信息，反射基于这一基础
-
-#### 1.2.加载过程
-
-* 通过类全名**获取类的二进制数据流**
-* 解析类的二进制数据流，成为**方法区内的数据结构（Java类原型）**
-* **堆中创建java.lang.Class类实例**，作为方法区该类的数据访问入口（Class对象在类加载过程创建，每个类都有一个Class类型的对象，Class类的构造方法私有，只有JVM能创建）
-
-若输入数据不是ClassFile，抛出异常ClassFormatError
-
-#### 1.3.数组类的加载
-
-数组本身不是由类加载器负责创建，而是由JVM运行时根据需要而直接创建，但数组的元素类型仍然需要通过类加载器创建，其数据加载过程如下：
-
-* 若数组元素类型是引用类型，遵循定义的类加载过程递归加载和创建数组的元素类型，且数组的可访问性与元素类型的可访问性相同
-
 #### 1.4.二进制流的获取方式
 
 * 文件系统读入.class文件（最常见）
@@ -153,6 +9,16 @@ VMware模拟CPU指令集，JVM模拟Java字节码指令集，模拟的层面不�
 ### 2.Linking（链接）
 
 #### 2.1.Verification（验证）
+
+
+
+
+
+若输入数据不是ClassFile，抛出异常ClassFormatError
+
+
+
+
 
 验证的目的是保证加载的字节码合法，验证的步骤比较复杂，实际要验证的项目也很繁多，大概验证过程如下
 
@@ -238,20 +104,6 @@ VMware模拟CPU指令集，JVM模拟Java字节码指令集，模拟的层面不�
 任何类在使用前都要经过链接阶段(验证、准备、解析)，经历后就等着开发人员使用
 
 ### 5.Unloading（卸载）（NO）
-
-## 七、Java编译器输入指令流有何优点（NO）
-
-Java编译器输入指令流是基于栈的指令集架构，基于栈实现起来更简单，资源不需要消耗太多
-
-设计和实现更简单，适用于资源受限的系统
-
-避开寄存器分配难题，使用零地址指令方式分配
-
-## 八、哪些语言可以编译字节码？（NO）
-
-运行于JVM的字节码只能由jaavc编译而来的Java源代码产生吗？
-
-## 九、JVM规范
 
 
 
@@ -344,8 +196,6 @@ public class LoadPath {
     }
 }
 ```
-
-
 
 ②结果
 
@@ -526,7 +376,6 @@ protected Class<?> loadClass(String name, boolean resolve)throws ClassNotFoundEx
             Class<?> c = findLoadedClass(name);
             //c==null表示没有加载
             if (c == null) {
-                long t0 = System.nanoTime();
                 try {
                     if (parent != null) {//如果有父类的加载器则让父类加载器加载
                         c = parent.loadClass(name, false);
@@ -538,11 +387,7 @@ protected Class<?> loadClass(String name, boolean resolve)throws ClassNotFoundEx
                 
                 //如果bootstrapClassLoader仍然没有加载过，则递归回来尝试自己去加载class
                 if (c == null) {
-                    long t1 = System.nanoTime();
                     c = findClass(name);
-                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
-                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
-                    sun.misc.PerfCounter.getFindClasses().increment();
                 }
             }
             if (resolve) {
@@ -612,6 +457,9 @@ public class OnlyClassLoaderTest {
         System.out.println("isAssignableFrom："+OnlyClassLoaderTest.class.isAssignableFrom(obj.getClass()));
         System.out.println("isInstance："+OnlyClassLoaderTest.class.isInstance(obj));
         System.out.println(obj instanceof OnlyClassLoaderTest);
+        System.out.println("------------------------");
+        System.out.println(OnlyClassLoaderTest.class.getClassLoader());
+        System.out.println(obj.getClass().getClassLoader());
 	}
 }
 ```
@@ -628,131 +476,291 @@ isAssignableFrom：false
 isInstance：false
 false
 //返回false是因为虚拟机中存在两个OnlyClassLoaderTest类，一个由应用程序类加载器加载，另一个由自定义类加载器加载，虽然二者都来自同一Class文件，但依然是两个独立的类，做对象所属类型检查时结果自然为false
+------------------------
+sun.misc.Launcher$AppClassLoader@4e0e2f2a
+OnlyClassLoader.OnlyClassLoaderTest$1@6d06d69c
 ```
 
 ## 十五、Tomcat的类加载器有哪些？
 
+### 1.为什么Tomcat需要自己的类加载器？
 
+如果Tomcat类加载器机制和双亲委派机制一样会出现什么问题？
 
-2. tomcat的类加载器有哪些?
+* **两个同名类无法被区分**：Tomcat的webapps目录下有两个应用，分别引入第三方jar：tool-1.0.jar和tool-2.0.jar，虽然jar的版本不同，但两个jar中都有MyTool.java类，若严格按照双亲委派机制可能导致两个应用中只有一个类会被加载，另一个已经加载过(全路径+类加载器相同)导致不会被加载，所以**要保证项目彼此隔离**
+* **同一个类被多次加载**：两个项目都依赖Spring，当Spring的jar被加载到内存后，两个项目都加载一次Spring的jar，造成资源浪费，所以**要保证项目间能共享资源**
+* Tomcat本身有类，也需要和项目的类进行隔离
 
-3. 双亲委派模型最大问题：底层的类加载器无法加载底层的类, 比如如下情况:
-       javax.xml.parsers包中定义了xml解析的类接口,  Service Provider Interface SPI 位于rt.jar 
-   即接口在启动ClassLoader中,    而SPI的实现类，通常是由用户实现的， 由AppLoader加载。 
+①编写两个MyTool
 
-     以下是javax.xmlparsers.FactoryFinder中的解决代码:   
-     static private Class getProviderClass(String className, ClassLoader cl,
-        boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException
-   {
-    try {
-        if (cl == null) {
-            if (useBSClsLoader) {
-                return Class.forName(className, true, FactoryFinder.class.getClassLoader());
-            } else {
-                cl = ss.getContextClassLoader();           //获取上下文加载器
-                if (cl == null) {
-                    throw new ClassNotFoundException();
-                }
-                else {
-                    return cl.loadClass(className);      //使用上下文ClassLoader
-                }
-            }
-        }
-        else {
-            return cl.loadClass(className);
-        }
+```
+package com.yc.MyTool;
+
+class MyTool{	
+	public static void say(){
+		System.out.println("hello");
+	}
+	public static void main(String[] args) {
+		say();
+	}
+}
+```
+
+```
+package com.yc.MyTool;
+
+public class MyTool {
+	public static void say(){
+		System.out.println("world");
+	}
+	public static void main(String[] args) {
+		say();
+	}
+}
+```
+
+②将两个Tool打成jar
+
+![1657593073891](assets/1657593073891.png)
+
+![1657593344749](assets/1657593344749.png)
+
+③创建普通Java项目，编写测试代码，导入两个jar，发现永远只输出hello
+
+```
+package MyToolTest;
+
+import com.yc.MyTool.MyTool;
+
+public class Test {
+	public static void main(String[] args) {
+		MyTool tool = new MyTool();
+		tool.say();
+	}
+}
+```
+
+### 2.Tomcat的类加载器种类
+
+![1657586925535](assets/1657586925535.png)
+
+三个基础类加载器+每个web应用的web类加载器，默认情况下三个基础类加载器都是同一个(Common)
+
+**Common ClassLoader**： 父类加载器是应用程序类加载器，是Tomcat顶层的公用类加载器，路径为common.loader，默认指向CATALINA_HOME/lib下的包，**负责加载Tomcat本身的类和Web应用都需要的类，如Servlet规范包等**
+
+**Catalina ClassLoader**：父类加载器是Common加载器，路径为server.loader(默认为空)，**目的是隔离Tomcat本身的类和Web项目的类，负责加载Tomcat应用类，对Web应用不可见(解耦合)**
+
+> 若需要共享采用父子关系，若需要隔离采用平行关系
+
+**Shared ClassLoader**： 父类加载器是Common加载器，Shared ClassLoader作为WebApp ClassLoader的父加载器，路径为shared.loader(默认为空)，**负责加载Web应用共享的类，对Tomcat服务器不可见**
+
+**WebApp ClassLoader**：父类加载器是Shared加载器，加载/WEB-INF/classes目录下未压缩的Class和资源文件以及/WEB-INF/lib下的jar包，**目的是隔离Web应用，区分类名相同的类，因为这些类所属的类加载器不同**
+
+### 3.Tomcat类加载器设计优点
+
+**共享性**：Common ClassLoader与Shared ClassLoader
+
+**隔离性**：Catalina ClassLoader与WebApp ClassLoader
+
+## 十六、双亲委派模型最大问题
+
+**底层的类加载器无法加载底层的类**, 比如如下情况:
+
+ javax.xml.parsers包中定义了xml解析的类接口,  Service Provider Interface SPI 位于rt.jar ，即接口在启动类加载器中，而SPI的实现类，通常是由用户实现的， 由应用程序类加载器加载
+
+javax.xml.parsers.FactoryFinder中的解决代码
+
+```
+static private Class getProviderClass(String className, ClassLoader cl,boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException{
+	try {
+		//如果类加载器为空
+    	if (cl == null) {
+        	if (useBSClsLoader) {//启动类加载器
+            	return Class.forName(className, true, FactoryFinder.class.getClassLoader());
+        	} else {
+            	cl = ss.getContextClassLoader();//获取上下文加载器
+            	if (cl == null) {
+                	throw new ClassNotFoundException();
+             	} else {
+                	return cl.loadClass(className);//使用上下文ClassLoader
+             	}
+         	}
+     	} else {
+        	return cl.loadClass(className);
+    	}
+	} catch (ClassNotFoundException e1) {
+    	if (doFallback) {
+        	// Use current class loader - should always be bootstrap CL
+        	return Class.forName(className, true, FactoryFinder.class.getClassLoader());
     }
-    catch (ClassNotFoundException e1) {
-        if (doFallback) {
-            // Use current class loader - should always be bootstrap CL
-            return Class.forName(className, true, FactoryFinder.class.getClassLoader());
-        }
+```
 
-      
-
-
-
-   更多可以参考理解:   jdbc的SPI 加载方式.    https://blog.csdn.net/syh121/article/details/120274044
+  更多可以参考理解：[jdbc的SPI加载方式](https://blog.csdn.net/syh121/article/details/120274044)
 
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     return ServiceLoader.load(service, cl);
 
-9. 双亲委派模式是默认的模式，但并非必须. 还有以下几个例 子，它实际上是破坏了双亲委派模式的. 
-    a. Tomcat的WebappClassLoader 就会先加载自己的Class，找不到再委托parent
-    b. OSGi的ClassLoader形成网状结构，根据需要自由加载Class
+## 十七、破环双亲委派的场景
 
-10. 请完成一个热替换的例子，并解释什么是热替换?
+双亲委派模式是默认的模式，但并非必须，以下场景破坏双亲委派：
 
+* Tomcat的WebappClassLoader先加载自己的Class，找不到再委托Parent
+* OSGi的ClassLoader形成网状结构，根据需要自由加载Class
 
+## 十八、什么是热替换？完成一个热替换的例子
 
+**热替换**：在不重启服务的情况下更改的代码生效，热替换可以提升开发以及调试的效率，基于Java类加载器实现，热加载的不安全性导致其一般不会用于正式的生产环境
 
+①被动态替换的类
 
+```java
+package HotReplace;
 
+public class Demo {
+	public void hot() {
+        System.out.println("OldDemo1"); // A:old class print
+        //System.out.println("NewDemo1"); // B:new class print
+    }
+}
+```
 
-1. jdk, jre, jvm 关系. 
-2. 了解以下未来jdk的新技术发展. 
-3. jvm种类， 我们使用的是哪一种，特点? 
-4.  为什么叫java 虚拟机，它与 vmware的区别?
-5. java虚拟机的整体架构
-6. 字节码的加载流程?
-7. java的编译器输入的指令流是一种基于栈的指令集架构, 它有什么优点?
-8. 能运行在虚拟机上的字节码只能由 javac 编译而来的java源代码产生吗， 除此之外，还有其它哪些语言也可以编译字节码出来?
-9. 能简单的说说java虚拟机规范吗?
+②自定义类加载器MyClassLoader
 
+```Java
+package HotReplace;
 
-================类加载相关================================
-1. jvm在什么情况下会加载一个类?
-2. 类加载到jvm中的过程?每个阶段的工作?
-3. jvm中的类加载器的类型及它加载的目标路径?如何自定义一个类加载器加载一个指定目录下的class文件?
-4. 什么是双亲委派模型，有什么作用?
-5. 类加载器是如何确定一个类在jvm中的唯一性的?  两个类来源于同一个Class文件，被同一个虚拟机加载,这两个类一定相等吗?
-6.   tomcat的类加载器有哪些?
-8. 双亲委派模型最大问题：底层的类加载器无法加载底层的类, 比如如下情况:
-          javax.xml.parsers包中定义了xml解析的类接口,  Service Provider Interface SPI 位于rt.jar 
-   即接口在启动ClassLoader中,    而SPI的实现类，通常是由用户实现的， 由AppLoader加载。 
-
-     以下是javax.xmlparsers.FactoryFinder中的解决代码:   
-     static private Class getProviderClass(String className, ClassLoader cl,
-        boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException
-{
-    try {
-        if (cl == null) {
-            if (useBSClsLoader) {
-                return Class.forName(className, true, FactoryFinder.class.getClassLoader());
-            } else {
-                cl = ss.getContextClassLoader();           //获取上下文加载器
-                if (cl == null) {
-                    throw new ClassNotFoundException();
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+ 
+public class MyClassLoader extends ClassLoader{
+    private String byteCodePath;//要加载的字节码文件的路径
+    public MyClassLoader(String byteCodePath){
+        this.byteCodePath = byteCodePath;
+    }
+	
+    @Override
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        String fileName = byteCodePath + name + ".class";//拼接要加载的字节码文件的绝对路径
+		
+        BufferedInputStream in = null;
+        ByteArrayOutputStream out = null;
+        try {
+            in = new BufferedInputStream(new FileInputStream(fileName));//输入流读取.class文件
+            out = new ByteArrayOutputStream();
+			
+            int len = 0;
+            byte[] data = new byte[1024];//1kb
+            while((len = in.read(data)) != -1){
+                out.write(data,0,len);
+            }
+            byte[] bytes = out.toByteArray();//获取到字节码的二进制流
+            Class<?> aClass = defineClass(null, bytes, 0, bytes.length);// 调用父类方法获取Class对象
+            return aClass;
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            // 释放资源
+            if (in != null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                else {
-                    return cl.loadClass(className);      //使用上下文ClassLoader
+            }
+            if (out != null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        else {
-            return cl.loadClass(className);
-        }
+        return null;
     }
-    catch (ClassNotFoundException e1) {
-        if (doFallback) {
-            // Use current class loader - should always be bootstrap CL
-            return Class.forName(className, true, FactoryFinder.class.getClassLoader());
+}
+```
+
+③测试类
+
+```Java
+package HotReplace;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import MyClassLoader.MyClassLoader;
+
+public class Test {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		while (true) {
+            try {
+            	//1.构建自定义类加载器
+                MyClassLoader myClassLoader = new MyClassLoader("E://JAVASE_WordSpace//MyClassLoader//bin//HotReplace//"); //要加载的路径
+                //2.通过.class文件获取Class对象
+        		Class<?> myTest = myClassLoader.findClass("Demo");
+        		//3.创建运行时类的实例
+        		Object demo = myTest.getConstructor().newInstance(null);
+        		//4.获取运行时类中指定的方法
+        		Method m = myTest.getMethod("hot");
+        		// 5. 调用指定的方法
+                m.invoke(demo);
+                
+                Thread.sleep(5000);
+            } catch (Exception e) {
+                System.out.println("not find");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
+	}
+}
+```
 
-      
+④放开Demo中的第一句，运行Test，隔一段时间再放开Demo中的第二句，输出结果如下
+
+```
+OldDemo1
+OldDemo1
+NewDemo1
+```
+
+## 十九、JVM是如何防止将非字节码文件加载到JVM中的?
+
+**魔术字**
+
+①编写一个简单的测试代码
+
+```
+class Hello{
+	public static void main(String []args){
+		System.out.println("hello");
+	}
+}
+```
+
+②生成字节码：`javac Hello.java`
+
+③PowerShell窗口输入`format-hex Hello.class`
+
+![1657613686434](assets/1657613686434.png)
+
+## 二十、`<clinit>() `是类构造器方法，它与类的构造方法有什么区别？
+
+`<init>()`：实例构造器方法，对非静态变量解析初始化，new对象时调用对象类的constructor方法时执`<init>()`，即实例化对象时调用
+
+> 实例化的四种途径：new、Class或Constructor 对象的newInstance()、任意对象的clone()、ObjectInputStream的getObject()反序列化
+
+`<clinit>()`：类构造器方法，对静态变量、静态代码块进行初始化，在类加载过程的初始化阶段JVM会执行`<clinit>()`，
 
 
 
-   更多可以参考理解:   jdbc的SPI 加载方式.    https://blog.csdn.net/syh121/article/details/120274044
 
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    return ServiceLoader.load(service, cl);
 
-9. 双亲委派模式是默认的模式，但并非必须. 还有以下几个例 子，它实际上是破坏了双亲委派模式的. 
-    a. Tomcat的WebappClassLoader 就会先加载自己的Class，找不到再委托parent
-    b. OSGi的ClassLoader形成网状结构，根据需要自由加载Class
 
-10. 请完成一个热替换的例子，并解释什么是热替换?
 
 
 
@@ -760,78 +768,71 @@ false
 
 =============================
 从虚拟机层面来看，以下代码运行时
-public class ClassInitTest {
-    private static int number = 10;      //linking之prepare: number = 0 --> initial: 10 --> 20
 
-    static {
-        number = 20;
-        System.out.println(num);
-    }
+    public class ClassInitTest {
+        private static int number = 10;//linking之prepare:number=0 -> initial:10 -> 20
+    	static {
+            number = 20;
+            System.out.println(num);
+        }
     
-    public static void main(String[] args) {
-        System.out.println(ClassInitTest.num);//2
-        System.out.println(ClassInitTest.number);//10
+        public static void main(String[] args) {
+            System.out.println(ClassInitTest.num);//2
+            System.out.println(ClassInitTest.number);//10
+        }
     }
-}
-
 
  number值的变化历程?????
 
 ==============================
 以下代码为输出类加载器的名字, 请给出你的结果:
+
+```
 public class ClassLoaderTest {
     public static void main(String[] args) {
-
-
-        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        System.out.println(systemClassLoader);//sun.misc.Launcher$AppClassLoader@18b4aac2
-
-
-        ClassLoader extClassLoader = systemClassLoader.getParent();
-        System.out.println(extClassLoader);//sun.misc.Launcher$ExtClassLoader@1540e19d
-
-
-        ClassLoader bootstrapClassLoader = extClassLoader.getParent();
-        System.out.println(bootstrapClassLoader);//null
-
-
-        ClassLoader classLoader = ClassLoaderTest.class.getClassLoader();
-        System.out.println(classLoader);//sun.misc.Launcher$AppClassLoader@18b4aac2
-
-
-        ClassLoader classLoader1 = String.class.getClassLoader();
-        System.out.println(classLoader1);//null
-    
-    }
+    	ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+    	System.out.println(systemClassLoader);//sun.misc.Launcher$AppClassLoader@18b4aac2
+    	
+    	ClassLoader extClassLoader = systemClassLoader.getParent();
+    	System.out.println(extClassLoader);//sun.misc.Launcher$ExtClassLoader@1540e19d
+    	
+    	ClassLoader bootstrapClassLoader = extClassLoader.getParent();
+    	System.out.println(bootstrapClassLoader);//null
+    	
+    	ClassLoader classLoader = ClassLoaderTest.class.getClassLoader();
+    	System.out.println(classLoader);//sun.misc.Launcher$AppClassLoader@18b4aac2
+    	
+    	ClassLoader classLoader1 = String.class.getClassLoader();
+    	System.out.println(classLoader1);//null
+	}
 }
+```
 
 ====================给出以下代码输出的各个类加载器的路径( 注意：分别用idea 测试和 直接在控制台下输出  测试两次，查看结果的不同，给出结论)======================
-public class ClassLoaderTest1 {
-    public static void main(String[] args) {
 
-        System.out.println("**********启动类加载器**************");
-        //获取BootstrapClassLoader能够加载的api的路径
-        URL[] urLs = sun.misc.Launcher.getBootstrapClassPath().getURLs();
-        for (URL element : urLs) {
-            System.out.println(element.toExternalForm());
-        }
-        //从上面的路径中随意选择一个类,来看看他的类加载器是什么:引导类加载器
-        ClassLoader classLoader = Provider.class.getClassLoader();
-        System.out.println(classLoader);//null
+    public class ClassLoaderTest1 {
+        public static void main(String[] args) {   
+            System.out.println("**********启动类加载器**************");
+            //获取BootstrapClassLoader能够加载的api的路径
+            URL[] urLs = sun.misc.Launcher.getBootstrapClassPath().getURLs();
+            for (URL element : urLs) {
+                System.out.println(element.toExternalForm());
+            }
+            //从上面的路径中随意选择一个类,来看看他的类加载器是什么:引导类加载器
+            ClassLoader classLoader = Provider.class.getClassLoader();
+            System.out.println(classLoader);//null
     
-        System.out.println("***********扩展类加载器*************");
-        String extDirs = System.getProperty("java.ext.dirs");
-        for (String path : extDirs.split(";")) {
-            System.out.println(path);
-        }
+            System.out.println("***********扩展类加载器*************");
+            String extDirs = System.getProperty("java.ext.dirs");
+            for (String path : extDirs.split(";")) {
+                System.out.println(path);
+            }
     
-        //从上面的路径中随意选择一个类,来看看他的类加载器是什么:扩展类加载器
-        ClassLoader classLoader1 = CurveDB.class.getClassLoader();
-        System.out.println(classLoader1);//sun.misc.Launcher$ExtClassLoader@1540e19d
-    
+            //从上面的路径中随意选择一个类,来看看他的类加载器是什么:扩展类加载器
+            ClassLoader classLoader1 = CurveDB.class.getClassLoader();
+            System.out.println(classLoader1);//sun.misc.Launcher$ExtClassLoader@1540e19d
+    	}
     }
-}
-
 ======================================
 获取ClassLoader 实例的途径
 
@@ -841,82 +842,103 @@ public class ClassLoaderTest1 {
  4. 获取调用者的ClassLoader ： DriverManager.getCallerClassLoader()
 
  那么以下代码输出的类加载器将是什么：
-   public class ClassLoaderTest2 {
-    public static void main(String[] args) {
-        try {
-            
-            //1.Class.forName().getClassLoader()
-            ClassLoader classLoader = Class.forName("java.lang.String").getClassLoader();
-            System.out.println(classLoader); // String 类由启动类加载器加载，我们无法获取
-    
-            //2.Thread.currentThread().getContextClassLoader()
-            ClassLoader classLoader1 = Thread.currentThread().getContextClassLoader();
-            System.out.println(classLoader1);
-    
-            //3.ClassLoader.getSystemClassLoader().getParent()
-            ClassLoader classLoader2 = ClassLoader.getSystemClassLoader();
-            System.out.println(classLoader2);
-    
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-}
 
+
+        public class ClassLoaderTest2 {
+            public static void main(String[] args) {
+                try {        
+                    //1.Class.forName().getClassLoader()
+                    ClassLoader classLoader = Class.forName("java.lang.String").getClassLoader();
+                    System.out.println(classLoader); // String 类由启动类加载器加载，我们无法获取
+                //2.Thread.currentThread().getContextClassLoader()
+                ClassLoader classLoader1 = Thread.currentThread().getContextClassLoader();
+                System.out.println(classLoader1);
+    
+                //3.ClassLoader.getSystemClassLoader().getParent()
+                ClassLoader classLoader2 = ClassLoader.getSystemClassLoader();
+                System.out.println(classLoader2);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+    	}
+    }
 ===================测试一下双亲委派模型在保证系统模型统一方面的作用================
 创建一个类：   java.lang.String
-package java.lang;
 
-public class String {
-    static{
-        System.out.println("我是自定义的String类的静态代码块");
-    }
-}
-
-
-public class StringTest {
-
-    public static void main(String[] args) {
-        java.lang.String str = new java.lang.String();
-        System.out.println("hello");
+    package java.lang;
     
-        StringTest test = new StringTest();
-        System.out.println(test.getClass().getClassLoader());
+    public class String {
+        static{
+            System.out.println("我是自定义的String类的静态代码块");
+        }
     }
-}
+    
+    public class StringTest {
+        public static void main(String[] args) {
+            java.lang.String str = new java.lang.String();
+            System.out.println("hello");
+    
+            StringTest test = new StringTest();
+            System.out.println(test.getClass().getClassLoader());
+    	}
+    }
 以上代码的输出结果是什么?
 
 如果修改一下代码如下: 
-package java.lang;
 
-public class String {
-    static{
-        System.out.println("我是自定义的String类的静态代码块");
+    package java.lang;
+    
+    public class String {
+        static{
+            System.out.println("我是自定义的String类的静态代码块");
+        }
+        
+        public static void main(String[] args) {
+            System.out.println("hello,String");
+        }
     }
-
-    public static void main(String[] args) {
-        System.out.println("hello,String");
-    }
-}
-     输出会是什么? 为什么?   这种机制就叫沙箱安全机制，请试着解释此术语及作用?
-
+ 输出会是什么? 为什么?   这种机制就叫沙箱安全机制，请试着解释此术语及作用?
 
 如果在自定义的java.lang包下定义自己的类，代码如下，会发生什么，请试分析为什么?
-  package java.lang;
+
+```
+package java.lang;
 
 public class ShkStart {
     public static void main(String[] args) {
         System.out.println("hello!");
     }
 }
+```
 
 
 =======================================
 试分析基于SPI机制的  jdbc 驱动的加载流程.  着重分析，为什么jdbc的接口是通过Bootstrap ClassLoader加载  rt.jar包获取，但 jdbc驱动却无法通过Bootstrap classload加载，那么它是怎么加载进来的?
 
-
 ==========================================
 jvm中只有主动使用类，才会加载类，那么加载类的七种情况有哪些?
+
+```
+1.创建类的实例。
+
+例如：new Class();
+
+
+2.访问某个类或接口的静态变量，或者给静态变量赋值
+
+
+
+3.调用类的静态方法
+
+
+4.反射：Class.forName("java.lang.String");
+
+
+5.初始化一个类的子类
+
+
+6.Java虚拟机启动时被标明为启动类的类（包含Main方法）
+```
 
 ==================================================
 类加载器作为jvm运行的第一阶段的组件的总结???
@@ -927,12 +949,24 @@ jvm中只有主动使用类，才会加载类，那么加载类的七种情况�
 
 
 
-jvm是如何防止将非 字节码文件加载到jvm中的?
 
 
 
 
+1. jvm运行时数据区的划分?
+2. 根据jvm规范，这些数据区中哪些会出现 内存溢出异常，分别是什么场景下出现?
+3. 这些数据区哪些是线程独有的，哪些是线程共享区?
+4. 每个区存储的数据的特点?
+5. 程序计数器是什么，它是线程独有的吗? 它是否有内存溢出问题.
+6. 虚拟机栈上保存哪些数据?怎么放?虚拟机栈是线程独有的吗，它是否有内存溢出问题?虚拟机栈的优点?
+7. 虚拟机栈的大小是否可动?是否会有异常出现?
+8. 如何设置虚拟机栈大小?
+9. 什么叫本地方法? 是否可以写一个例子来实现本地方法，以输出一个hello world?
+10.什么叫本地方法栈?有什么作用?它是线程私有的吗? 它是否有可能抛出异常?
+11. jvm规范一定强制要求实现本地方法栈吗?
+12. 方法区是线程独有的吗?它是否有异常?它的作用?
+13. 方法区的演进, jdk7及以前，它叫什么? jdk8开始，这又叫什么. 
+14. 方法区或永久代的大小如何设置?
 
 
 
-<clinit>() 是类构造器方法,它与类的构造方法有什么区别?
