@@ -70,7 +70,7 @@ JVM规范中，每个线程都有自己的PC寄存器，所以**PC寄存器是�
 
 PC寄存器**没有GC(垃圾回收)**，也**没有OOM(OutOfMemoryError)**
 
-> 虚拟机栈和本地方法栈没有GC有OOM，堆和方法区既有GC又有OOM
+> 虚拟机栈和本地方法栈没有GC但有OOM，堆和方法区既有GC又有OOM
 
 ### 2.举例说明
 
@@ -131,7 +131,7 @@ JVM解释器需要通过改变PC寄存器的值来明确下一条指令
 
 PC寄存器**没有GC(垃圾回收)**，也**没有OOM(OutOfMemoryError)**
 
-虚拟机栈**内部保存着一个个栈帧(Stack Frame)**，对应一次次Java方法调用，每个Java方法的调用都对应着压栈和入栈，虚拟机栈**保存方法的局部变量(8种基本数据类型、对象的引用地址)、部分结果，并参与方法的调用和返回**
+虚拟机栈**内部保存着一个个栈帧(Stack Frame)**，对应一次次Java方法调用，每个Java方法的调用都对应着压栈和入栈
 
 虚拟机栈的速度仅次于PC寄存器
 
@@ -139,19 +139,7 @@ PC寄存器**没有GC(垃圾回收)**，也**没有OOM(OutOfMemoryError)**
 
 JVM规范允许虚拟机栈的大小是动态的或固定不变的
 
-**StackOverflowError**：若采用固定不变的虚拟机栈，那么每个线程的虚拟机栈大小可在线程创建时独立创建，若线程请求分配的虚拟机栈容量大于虚拟机栈的最大容量则抛出此异常
-
-**OutOfMemoryError**：若采用动态的虚拟机栈，在尝试扩展时无法申请到足够内存或创建新线程的同时没有足够内存创建虚拟机栈则抛出此异常
-
-### 4.设置内存大小
-
-**栈大小直接决定函数调用的最大可达深度**，可通过参数`-Xss`选项来设置线程的最大栈空间
-
-IDEA中的设置方式：`Run → Edit Configurations → Application → 选中项目 → Configuration → VM options → -Xss2m`
-
-![1657783374669](assets/1657783374669.png)
-
-①测试代码
+**StackOverflowError**：若采用固定不变的虚拟机栈，那么每个线程的虚拟机栈大小可在线程创建时独立创建，若线程请求分配的虚拟机栈容量大于虚拟机栈的最大容量则抛出此异常，测试代码如下
 
 ```Java
 public class XSS {//一个简单的相互调用
@@ -173,22 +161,40 @@ public class XSS {//一个简单的相互调用
 }
 ```
 
-②直接运行结果如下
+**OutOfMemoryError**：若采用动态的虚拟机栈，在尝试扩展时无法申请到足够内存或创建新线程的同时没有足够内存创建虚拟机栈则抛出此异常，测试代码如下
 
-```
-29509
-java.lang.StackOverflowError
-	at com.yc.Test03_Exception.XSS.recursion(XSS.java:16)
-	at com.yc.Test03_Exception.XSS.recursion(XSS.java:16)
+```Java
+import java.util.ArrayList;
+
+public class OutOfMemory {
+    public static void main(String[] args) {
+        ArrayList<Student> list = new ArrayList<>();
+        while (true) {
+            list.add(new Student(1L, "a", 30L));
+        }
+    }
+}
+
+class Student {
+    long id;
+    String name;
+    long age;
+
+    public Student(long id, String name, long age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+}
 ```
 
-③设置内存大小为`2m`结果如下
+### 4.设置内存大小
 
-```
-Error: Could not create the Java Virtual Machine.
-Error: A fatal exception has occurred. Program will exit.
-Invalid thread stack size: -Xss:2m
-```
+**栈大小直接决定函数调用的最大可达深度**，可通过参数`-Xss`选项来设置线程的最大栈空间
+
+IDEA中的设置方式：`Run → Edit Configurations → Application → 选中项目 → Configuration → VM options → -Xss2m`
+
+![1657783374669](assets/1657783374669.png)
 
 ### 5.栈的运行原理
 
@@ -210,9 +216,9 @@ Invalid thread stack size: -Xss:2m
 
 #### 6.2.局部变量表
 
-局部变量表被定义为数字数组，用于**顺序存储方法参数和局部变量**，局部变量表属于线程私有，所以**不存在数据不安全问题**，方法调用结束后随着栈帧销毁，局部变量表也随之被销毁
+局部变量表被定义为**数字数组**，用于**顺序存储方法参数和局部变量**，局部变量表属于线程私有，所以**不存在数据不安全问题**，方法调用结束后随着栈帧销毁，局部变量表也随之被销毁
 
-局部变量表的大小在编译期间确定，保存于方法Code属性的`maximum local variables`数据项中，运行期间局部变量表的大小不会改变，以下出示案例，通过jclasslib工具查看分析
+**局部变量表的大小在编译期间确定**，保存于方法Code属性的`maximum local variables`数据项中，运行期间局部变量表的大小不会改变，以下出示案例，通过jclasslib工具查看分析
 
 ```java
 import java.util.Date;
@@ -248,7 +254,7 @@ public class LocalVariablesTest {
 
 若当前栈帧由构造方法`<init>`或实例方法(非静态)创建，该对象的this将被存于index为0的Slot，注意静态方法无this，其他参数按参数表顺序排列
 
-局部变量表中Slot可重用，若一个局部变量过了其作用域，那么在其作用域之后产生的新局部变量就很有可能会复用该Slot，从而达到节省资源的目的
+局部变量表中**Slot可重用**，若一个局部变量过了其作用域，那么在其作用域之后产生的新局部变量就很有可能会复用该Slot，从而达到节省资源的目的
 
 ![1657788499968](assets/1657788499968.png)
 
@@ -305,31 +311,253 @@ public class OperandStackTest {
            10       1     3     k   I
 ```
 
+**字节码执行过程如下**
 
+* 栈帧对应一次方法调用，当方法被调用时创建栈帧，此时局部变量表和虚拟机栈都为空，但大小在编译时期已经确定好，`0: bipush        15`让15进入操作数栈
 
+![1657851164571](assets/1657851164571.png)
 
+* 执行完上一条语句后PC+1指向下一条指令，将15出栈，`istore_1`使15保存到局部变量表索引1的位置(0位置保存的是this)
 
+![1657851521662](assets/1657851521662.png)
 
+* 指令地址3、5与上两步相同，图解如下
 
+![1657851627623](assets/1657851627623.png)
 
+![1657851655808](assets/1657851655808.png)
 
-> [参考文章](https://blog.csdn.net/rrq_0324/article/details/109035773?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&utm_relevant_index=6)
+* `iload_1`和`iload_2`是取局部变量表中索引12位置的局部变量存到操作数栈中
 
+![1657851801379](assets/1657851801379.png)
 
+![1657851857906](assets/1657851857906.png)
 
+* 指令地址8会将操作数栈中的两个元素出栈，此时**执行引擎参与将字节码指令转换为机器指令`iadd`**，两数相加后结果23存入操作数栈中
 
+![1657852133731](assets/1657852133731.png)
 
-## 1.jvm运行时数据区的划分?
+* 指令地址9会将操作数栈中23取出存到局部变量表索引3的位置
 
-本地方法栈
+![1657852214048](assets/1657852214048.png)
 
-程序计数器
+* 最后PC指向10，退出方法
 
-虚拟机栈，为了实现跨平台，Java指令集基于栈设计
+#### 6.4.动态链接
+
+栈帧内部都包含指向**运行时常量池中该栈帧所属方法的引用**，包含该引用**为了支持当前方法的代码实现动态链接(Dynamic Linking)**，比如`invokedynamic`指令
+
+Java源文件被编译成字节码时，所有的变量和方法引用都作为符号变量被存于常量池，**动态链接的作用也就是将这些符号引用转变为直接引用**
+
+![1657855562120](assets/1657855562120.png)
+
+> Constant Pool存于字节码文件中，字节码运行起来就成了我们常说的运行时常量池，为什么需要运行时常量池呢？
+>
+> 不同方法中可能有相同属性或方法，相同的属性或方法存一份就好，节省空间
+
+JVM中将符号引用转为直接引用与**方法的绑定机制相关**，链接方式也分为两种
+
+* **静态链接**：被调用的方法在编译器可知，且运行期保持不变
+* **动态链接**：被调用的方法在编译器无法确定，即只能在运行期将符号引用转变为直接引用，这种转变过程具备动态性
+
+方法的绑定机制同样也分为两种，绑定一个字段、方法或类符号引用转变为直接引用的过程仅仅发生一次
+
+* **早期绑定**：被调用的方法在编译器可知，且运行期保持不变，即可将该方法与所属类型绑定，使用静态链接将符号引用转为直接引用
+* **晚期绑定**：被调用的方法在编译器无法确定，使用动态链接将符号引用转为直接引用
+
+> 面向对象语言总保留着封装、继承、多态的特点，因为多态，自然也就具备早期绑定和晚期绑定两种
+
+#### 6.5.方法返回地址
+
+方法结束只有两种方式，即正常退出或异常退出，无论哪种**都返回到该方法被调用的位置**，**方法返回地址存的就是调用该方法PC寄存器的值**
+
+* **正常退出**：执行引擎遇到方法返回字节码指令(return)会将返回值递给上层方法调用者
+
+  > ireturn(boolean，byte，char，short，int)，lreturn(long)，freturn(float类型)，dreturn(double)，areturn(引用类型)
+
+* **异常退出**：方法执行过程中遇到异常且未捕获，即方法的异常表中为检索到该异常会导致方法退出，且**无返回值给上层调用者**
+
+本质上，方法退出就是当前栈帧出栈的过程，需要恢复上层调用者的局部变量表、操作数栈并将方法返回值压入上层调用者的操作数栈、更新PC寄存器值等
+
+#### 6.6.一些附加操作
+
+虚拟机栈允许携带JVM相关的附加信息，如对程序调试提供支持的信息
+
+### 7.常见面试题
+
+#### 7.1.虚拟机栈上保存哪些数据？怎么放？
+
+虚拟机栈上以栈帧为单位，栈帧由五部分组成，**局部变量表**以数字数组的形式存放方法参数与返回值，**操作数栈**以数组形式存放中间结果，**动态链接**将符号引用转为直接引用，**方法返回地址**存调用该方法PC寄存器的值，**一些附加信息**
+
+#### 7.2.虚拟机栈是线程独有的吗？是否存在GC？是否有内存溢出问题？虚拟机栈的优点？
+
+虚拟机栈是线程独有，不存在GC，存在内存溢出问题，虚拟机栈跨平台、指令集小、编译快
+
+#### 7.3.虚拟机栈的大小是否可动？是否会有异常出现？调整栈大小可以保证不溢出吗？
+
+虚拟机栈大小可通过`-Xss`改变，可能出现`StackOverflowError`和`OutofMemoryError`，调整栈大小不能保证不溢出，仅仅能保证异常晚一点出现
+
+#### 7.4.方法中定义的局部变量是否线程安全？
+
+这个具体情况具体分析，总之**对象在方法内部产生，同时在方法内部消亡则一定线程安全**
+
+## 五、本地方法栈
+
+### 1.什么是本地方法？
+
+本地方法(Native Method)指**Java代码调用非Java代码的接口**，定义Native Method时不必提供实现体，因为由外部非Java语言提供实现
+
+> native标识符不可与abstract连用，其他都可以
+
+本地方法出现解决Java实现某些任务不容易或效率不高，使用其他容易实现的语言的情况，经过以下实例通过Java代码调用C代码
+
+①编写Java代码，内部定义并调用native方法
+
+```java
+public class Testjni{
+	public native void hello();
+	
+	static {
+		System.setProperty("java.library.path",".");//.代表当前class文件所在目录
+		System.loadLibrary("dllhelloworld");//dllhelloworld是生成的dll文件的名字
+	}
+	
+	public static void main(String []args){
+		new Testjni().hello();
+	}
+}
+```
+
+②`javac -h ./ Testjni.java`编译并生成头文件
+
+![1657874024404](assets/1657874024404.png)
+
+③打开Testjni.h
+
+![1657874127872](assets/1657874127872.png)
+
+④新建DLL的C项目
+
+![1657874348804](assets/1657874348804.png)
+
+![1657874470643](assets/1657874470643.png)
+
+⑤从JDK安装目录`include`下拷贝三个文件
+
+![1657874630519](assets/1657874630519.png)
+
+⑥编写`dllmain.h`，同时保存`dllmain.h`和`dll.h`，编译生成`dllhelloworld.dll`，该文件需要与`dllhelloworld.dev`同名
+
+```c
+/* Replace "dll.h" with the name of your header */
+#include "dll.h"
+#include "jni.h" //添加此头文件 
+#include <windows.h>
+
+DLLIMPORT void HelloWorld()
+{
+	MessageBox(0,"Hello World from DLL!\n","Hi",MB_ICONINFORMATION);
+}
+
+//编写C代码，名称与之前.h文件中需要记住的名称相同
+JNIEXPORT void JNICALL Java_Testjni_hello(JNIEnv * env, jobject thiz){
+	printf("HELLO WORLD...\n");
+	return;
+} 
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved)
+{
+	switch(fdwReason)
+	{
+		case DLL_PROCESS_ATTACH:
+		{
+			break;
+		}
+		case DLL_PROCESS_DETACH:
+		{
+			break;
+		}
+		case DLL_THREAD_ATTACH:
+		{
+			break;
+		}
+		case DLL_THREAD_DETACH:
+		{
+			break;
+		}
+	}
+	
+	/* Return TRUE on success, FALSE on failure */
+	return TRUE;
+}
+```
+
+⑦`java Testjni`运行Java代码，注意`dllhelloworld.dll`需要与`Testjni.class`在同一目录
 
 ```
-栈是运行单位，堆是存储单位，每个线程都有自己的虚拟机栈（私有），内部保存这栈帧，生命周期和线程一致，对于站不存在垃圾回收GC，直接弹出，堆栈只有两个操作，入栈出栈，内存不够异常
+E:\JVM\Native Method>java Testjni
+HELLO WORLD...
 ```
+
+### 2.本地方法栈
+
+虚拟机栈用于管理Java方法调用，而本地方法栈则用来管理本地方法的调用，本地方法栈是C语言编写
+
+**本地方法栈也是线程私有的**，不存在GC，存在两种异常，允许固定或动态扩展内存大小
+
+**本地方法栈中登记native方法，执行引擎执行时加载本地方法库**
+
+某线程调用本地方法时，它就进入一个全新的并且不再受JVM限制的世界，**本地方法可以通过本地方法接口来访问JVM内部的运行时数据区**，甚至可以直接使用本地处理器中的寄存器，直接从本地内存的堆中分配任意数量的内存
+
+并不是所有的JVM都支持本地方法。因为JVM规范并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等，如果JVM产品不打算支持native方法也可以无需实现本地方法栈，**Hotspot JVM直接将本地方法栈和虚拟机栈合二为一**
+
+## 六、堆
+
+### 1.堆概述
+
+一个JVM进程对应一个JVM实例，一个JVM实例只有一个堆内存，而一个JVM进程可包含多个线程，所以**堆被线程共享，但可以划分线程私有的缓冲区(TLAB)**，Java堆区在JVM启动时被创建，其空间大小也确定好，堆内存大小可调节，**堆可以处于物理上不连续的空间，但逻辑上需要是连续的**
+
+数组和对象可能永远不会存于栈上，因为栈帧中存的是数组和对象的引用，该引用指向数组和对象在堆中的位置，所以**数组和对象实际存于堆中**
+
+> 《Java虚拟机规范》中对Java堆的描述是：所有的对象实例以及数组都应当在运行时分配在堆上(The heap is the run-time data area from which memory for all class instances and arrays is allocated.)
+
+方法结束后堆中对象不会马上被移除，仅仅在垃圾收集时才会被移除，也就是触发GC时该对象才被回收，若方法结束后对象被马上回收，那么用户线程会受到影响，**堆是GC执行垃圾回收的重点区域**
+
+![1657885976445](assets/1657885976445.png)
+
+现代垃圾收集器基于**分代收集理论**设置，堆空间可细分为如下情况
+
+* Java7及之前堆内存逻辑上分为三部分：**新生区(Young Generation Space) + 养老区(Tenure Generation Space) + 永久区(Permanent Space)**
+
+![1657887143225](assets/1657887143225.png)
+
+* Java8及之后堆内存逻辑上分为三部分：**新生区(Young Generation Space) + 养老区(Tenure Generation Space) + 元空间(Meta Space)
+
+![1657887192255](assets/1657887192255.png)
+
+> 约定：新生区 = 新生代 = 年轻代、养老区 = 老年区 = 老年代、永久区 = 永久代
+
+* Java7与Java8堆空间对比
+
+![1657887364832](assets/1657887364832.png)
+
+### 2.设置堆内存大小与OOM
+
+
+
+
+
+
+
+
+
+## 方法区
+
+
+
+
+
+> [参考文章1](https://blog.csdn.net/rrq_0324/article/details/109035773?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&utm_relevant_index=6)	[参考文章2](https://blog.csdn.net/rrq_0324/article/details/109171470)
 
 堆区：新生代、老年代
 
@@ -343,17 +571,11 @@ public class OperandStackTest {
 
 
 
-
-
-
-
 1. 根据jvm规范，这些数据区中哪些会出现 内存溢出异常，分别是什么场景下出现?
 2. 这些数据区哪些是线程独有的，哪些是线程共享区?
 3. 每个区存储的数据的特点?
 4. 程序计数器是什么，它是线程独有的吗? 它是否有内存溢出问题.
-5. 虚拟机栈上保存哪些数据?怎么放?虚拟机栈是线程独有的吗，它是否有内存溢出问题?虚拟机栈的优点?
-6. 虚拟机栈的大小是否可动?是否会有异常出现?
-7. 如何设置虚拟机栈大小?
+5. 
 8. 什么叫本地方法? 是否可以写一个例子来实现本地方法，以输出一个hello world?
    10.什么叫本地方法栈?有什么作用?它是线程私有的吗? 它是否有可能抛出异常?
 9. jvm规范一定强制要求实现本地方法栈吗?
