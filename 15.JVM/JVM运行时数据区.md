@@ -511,11 +511,47 @@ HELLO WORLD...
 
 并不是所有的JVM都支持本地方法。因为JVM规范并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等，如果JVM产品不打算支持native方法也可以无需实现本地方法栈，**Hotspot JVM直接将本地方法栈和虚拟机栈合二为一**
 
-## 六、堆
+### 3.常见面试题
+
+#### 3.1.本地方法栈是什么？有什么用？
+
+本地方法栈是存放native方法的栈，用于管理每次本地方法调用
+
+#### 3.2.本地方法栈是线程私有吗？是否有可能抛出异常？
+
+本地方法栈是线程私有，可能抛出OOM和StackOverflowError
+
+#### 3.3.JVM规范一定强制要求实现本地方法栈吗？
+
+不强制要求，支持本地方法时才需要实现本地方法栈
+
+## 六、插播一条调优工具的使用
+
+### 1.使用jvisuallvm工具
+
+![1657760578480](assets/1657760578480.png)
+
+### 2.Visual GC插件安装
+
+![1657761206483](assets/1657761206483.png)
+
+![1657761180136](assets/1657761180136.png)
+
+![1657761400755](assets/1657761400755.png)
+
+![1657761437834](assets/1657761437834.png)
+
+> [参考文章](https://blog.csdn.net/jushisi/article/details/109655175?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-109655175-blog-119964128.pc_relevant_multi_platform_whitelistv2&spm=1001.2101.3001.4242.1&utm_relevant_index=2)
+
+### 3.运行项目，出现Visual GC
+
+![1657761863830](assets/1657761863830.png)
+
+## 七、堆
 
 ### 1.堆概述
 
-一个JVM进程对应一个JVM实例，一个JVM实例只有一个堆内存，而一个JVM进程可包含多个线程，所以**堆被线程共享，但可以划分线程私有的缓冲区(TLAB)**，Java堆区在JVM启动时被创建，其空间大小也确定好，堆内存大小可调节，**堆可以处于物理上不连续的空间，但逻辑上需要是连续的**
+一个JVM进程对应一个JVM实例，一个JVM实例只有一个堆内存，而一个JVM进程可包含多个线程，所以**堆被线程共享，但可以划分线程私有的缓冲区(TLAB)**，**堆可以处于物理上不连续的空间，但逻辑上需要是连续的**
 
 数组和对象可能永远不会存于栈上，因为栈帧中存的是数组和对象的引用，该引用指向数组和对象在堆中的位置，所以**数组和对象实际存于堆中**
 
@@ -531,7 +567,7 @@ HELLO WORLD...
 
 ![1657887143225](assets/1657887143225.png)
 
-* Java8及之后堆内存逻辑上分为三部分：**新生区(Young Generation Space) + 养老区(Tenure Generation Space) + 元空间(Meta Space)
+* Java8及之后堆内存逻辑上分为三部分：**新生区(Young Generation Space) + 养老区(Tenure Generation Space) + 元空间(Meta Space)**
 
 ![1657887192255](assets/1657887192255.png)
 
@@ -543,6 +579,453 @@ HELLO WORLD...
 
 ### 2.设置堆内存大小与OOM
 
+Java堆区在JVM启动时被创建，其空间大小也确定好，**堆内存大小可通过`-Xms`和`-Xmx`调节**，`-Xms`用于设置新生代和老年代的初始内存大小，`-Xmx`用于设置新生代和老年代的最大内存大小，内存超过`-Xmx`则抛出OutOfMemoryError，**通常配置`-Xms=-Xmx`，目的是GC清理完堆区后无需重新计算堆区大小，从而提高性能,默认`-Xms=电脑物理内存大小 / 64`，`-Xmx=电脑物理内存大小 / 4`**
+
+通常配置`-Xms=-Xmx`，目的是GC清理完堆区后无需重新计算堆区大小，从而提高性能
+
+> IDEA设置方法：Run → Edit Configurations → Application → HeapSpaceInitial → Configuration → VM options → -Xms600m -Xmx600m
+
+查看设置参数，代码如下
+
+```Java
+public class HeapTest {
+    public static void main(String[] args) {
+        //获取本机逻辑处理器的数量
+        System.out.println(Runtime.getRuntime().availableProcessors()); //8
+
+        //返回Java虚拟机试图使用的最大堆内存量
+        System.out.println(Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB"); //1787MB
+
+        //返回Java虚拟机中的堆内存总量
+        System.out.println(Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB"); //121MB
+    }
+}
+```
+
+**IDEA中查看堆空间配置参数有两种方式**
+
+* `Win+R → cmd → jps / jstat -gc 进程id / jinfo -flag NewRatio 进程id（查看对应的-XX:NewRatio=2）`
+* VMoptions中配置参数`-Xms600m -Xmx600m -XX:+PrintGCDetails`，其中`-XX:+PrintGCDetails`用于打印垃圾回收的细节，测试代码如下
+
+```java
+public class HeapSpaceInitial {
+    public static void main(String[] args) {
+
+        //返回Java虚拟机中的堆内存总量
+        long initialMemory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
+        //返回Java虚拟机试图使用的最大堆内存量
+        long maxMemory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
+
+        System.out.println("-Xms : " + initialMemory + "M"); //-Xms : 575M
+        System.out.println("-Xmx : " + maxMemory + "M"); //-Xmx : 575M
+
+        System.out.println("系统内存大小为：" + initialMemory * 64.0 / 1024 + "G");
+        System.out.println("系统内存大小为：" + maxMemory * 4.0 / 1024 + "G");
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+```java
+-Xms : 575M
+-Xmx : 575M
+系统内存大小为：35.9375G
+系统内存大小为：2.24609375G
+Heap
+ PSYoungGen      total 179200K, used 15360K [0x00000000f3800000, 0x0000000100000000, 0x0000000100000000)
+  eden space 153600K, 10% used [0x00000000f3800000,0x00000000f4700268,0x00000000fce00000)
+  from space 25600K, 0% used [0x00000000fe700000,0x00000000fe700000,0x0000000100000000)
+  to   space 25600K, 0% used [0x00000000fce00000,0x00000000fce00000,0x00000000fe700000)
+ ParOldGen       total 409600K, used 0K [0x00000000da800000, 0x00000000f3800000, 0x00000000f3800000)
+  object space 409600K, 0% used [0x00000000da800000,0x00000000da800000,0x00000000f3800000)
+ Metaspace       used 3288K, capacity 4500K, committed 4864K, reserved 1056768K
+  class space    used 359K, capacity 388K, committed 512K, reserved 1048576K
+```
+
+### 3.新生代和老年代
+
+**存储与JVM的对象可分为两类**，一类生命周期较短，创建和消亡都非常迅速；另一类生命周期非常长，极端情况下生命周期可与JVM生命周期保持一致，所以**JVM堆区也进一步划分为新生代YoungGen和OldGen，新生代又可划分为Eden空间、Survivor0(From)空间和Survivor1(To)空间**，OldGen存放YoungGen中经历多次GC仍然存活的对象
+
+![1657936004334](assets/1657936004334.png)
+
+**新生代和老年代可配置**，默认配置是`Young:Old=1:2，Eden:From:To=8:1:1`，可通过以下方法修改配置
+
+```
+默认-XX:NewRatio=2，表示新生代占1，老年代占2，新生代占整个堆的1/3
+修改-XX:NewRatio=4，表示新生代占1，老年代占4，新生代占整个堆的1/5
+默认-XX:SurvivorRatio=8，表示Eden:From:To=8:1:1
+```
+
+**几乎所有Java对象都在Eden区被`new`，有些大对象Eden区无法存储就直接进入老年代，绝大多数Java对象销毁也都在新生代进行**，数据表明新生代80%的对象都是“朝生夕死”，可通过`-Xmn`设置新生代最大内存(默认就好)
+
+**其实不分代完全可以，分代的唯一理由就是优化GC性能**，如果没有分代，那所有的对象都在一块，GC时要找到没有对象会对堆的所有区域进行扫描，而很多对象都是朝生夕死的，如果分代把新创建的对象放到某一地方，当GC时先把这块存储“朝生夕死”对象的区域进行回收，这样就会腾出很大的空间出来
+
+### 4.对象分配过程
+
+![1657937455354](assets/1657937455354.png)
+
+①new的对象尝试放在伊甸园区，但此区有**大小限制**
+
+②若Eden放得下则为该对象分配内存；**若放不下则JVM垃圾回收器(Minor GC)将Eden区的不再被其他对象引用的对象进行销毁，再尝试将对象放在Eden，并将Eden区剩余存活对象移到S0区**
+
+③若再次触发垃圾回收，则上次幸存下来的放在S0，若没有回触发垃圾回收，则存放到S1区；若再次垃圾回收，此时会重新放回S0，再去S1
+
+④若幸存者区对象年龄达到阈值(默认15)，则会在垃圾回收时进入老年代
+
+> -XX:MaxTenuringThreshold=＜N＞可设置年龄阈值
+
+⑤当老年代内存不足时触发**Major GC**进行老年代垃圾回收，若老年代Major GC后仍然内存不足则抛出OOM异常
+
+> 对S0，S1：复制后有交换，谁空谁是To(交换为了减少内存碎片)
+>
+> 对GC：新生代频繁，老年代很少，永久代/元空间几乎不
+
+### 5.Minor GC/Major GC/Full GC
+
+#### 5.1.概述
+
+JVM调优的某环节也就是垃圾回收，**需要尽量避免垃圾回收，因为垃圾回收过程中容易出现STW问题，而Major GC和Full GC中出现STW问题是Minor GC的10倍以上**，
+
+> STW(Stop-The-World)：执行GC算法时Java程序**其他所有线程被挂起(除垃圾回收帮助器)**，Java中的全局暂停情况，只有native代码可执行，但不能与JVM交互
+
+GC并非每次都对三个区域一起回收，HotSpot中GC**按回收区域**可分为如下几种
+
+* **部分收集(Partial GC)**：新生代收集(Minor GC / Young GC / YGC)、老年代收集(Major GC / Old GC)
+
+  > 目前，只有CMS GC会有单独收集老年代的行为，且注意，很多时候Major GC会和Full GC混淆使用，需要具体分辨是老年代回收还是整堆回收
+
+* **混合收集(Mixed GC)**：收集整个新生代和部分老年代垃圾
+
+  > 目前，只有G1 GC会有这种行为
+
+* **整堆收集(Full GC)**：收集整个Java堆和方法区垃圾
+
+#### 5.2.Minor GC
+
+**年轻代空间不足时触发Minor GC，此处年轻代满指的是Eden区满，S0和S1满不会触发GC**
+
+Eden区满主要因为**为对象分配内存不够**和**为TLAB分配内存不够**，因为Java对象常常朝生夕灭，所以**Minor GC非常频繁**，Minor GC会触发STW，导致Java全局暂停，等待Minor GC结束用户线程才恢复
+
+#### 5.3.Major GC
+
+**老年代空间不足时触发Major GC**，出现Major GC至少伴随一次Minor GC，但并非绝对，也就是说**当老年代空间不足时首先尝试触发Minor GC，若空间还是不足则触发Major GC，若空间还是不足则报错OOM**
+
+**Major GC的速度比Minor GC慢上10倍，STW时间更长**
+
+#### 5.4.Full GC
+
+触发Full GC的情况只有以下五种，**Full GC在调优中需要尽量避免**
+
+* 调用`System.gc()`，系统建议执行Full GC，但是不必然执行
+* 大对象直接在老年代申请分配，但老年代空间不足
+* 方法区空间不足
+* 通过Minor GC后进入老年代的平均大小大于老年代的可用内存
+* 由Eden、S0向S1复制时，对象大于S1的可用内存，将该对象转入老年代，且老年代的可用内存小于该对象大小
+
+#### 5.5.垃圾回收细节日志分析
+
+![1657762108651](assets/1657762108651.png)
+
+```
+[GC (Allocation Failure)
+ [PSYoungGen: 179194K->25585K(179200K)] 422590K->416406K(588800K), 0.0256167 secs]
+ [Times: user=0.02 sys=0.14, real=0.02 secs] 
+
+------------------------------------------------------------
+
+GC：区分Minor GC/Full GC的标志，此处GC表明本次发生的是Minor GC(年轻代GC)
+Allocation Failure：触发GC的原因，本次GC事件是由于对象分配失败，即年轻代中没有空间来存放新生成的对象引起的
+PSYoungGen：垃圾收集器名称，该名称表示在年轻代中使用的
+153600K->25593K(179200K)：年轻代回收前内存大小->年轻代回收后内存大小(总内存大小)
+422590K->416406K(588800K)：堆内存回收前大小->堆内存回收后大小(总堆内存大小)
+0.0256167：GC耗时
+user=0.02 sys=0.14, real=0.02 secs：GC事件的持续时间通过三个部分衡量，user表示GC线程所消耗的总CPU时间，sys表示操作系统和系统等待事件所消耗的时间，real则表示应用程序实际暂停时间，并不是所有的操作过程都能全部并行，所以在并行GC中real约等于user+system/GC线程数
+老年代大小=588800-179200
+```
+
+```
+[Full GC (Ergonomics)
+ [PSYoungGen: 154927K->0K(179200K)]
+ [ParOldGen: 409567K->2318K(409600K)] 564494K->2318K(588800K),
+ [Metaspace: 9201K->9201K(1058816K)], 0.0095533 secs] 
+ [Times: user=0.00 sys=0.00, real=0.01 secs] 
+
+------------------------------------------------------------
+
+Ergonomics：自动调解GC暂停时间和吞吐量之间的平衡，使虚拟机性能更好的一种做法，对于注重吞吐量的收集器来说，在某个generation被过渡使用之前GC Ergonomics会启动一次GC，发生本次Full GC正是在使用Parallel Scavenge收集器的情况下发生的
+PSYoungGen：垃圾收集器名称，该名称表示在年轻代中使用的
+ParOldGen: 垃圾收集器名称，该名称表示在老年代中使用的，这是并行STW垃圾收集器，算法为标记-清除-整理
+```
+
+```java
+//出现OOM报错之前进行一次Full GC
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at com.yc.jvm.ch2.Test6_HeapInstance.<init>(Test6_HeapInstance.java:19)
+	at com.yc.jvm.ch2.Test6_HeapInstance.main(Test6_HeapInstance.java:24)
+
+//153600K + 25600K + 25600K = 新生代
+Heap
+ PSYoungGen      total 179200K, used 3434K [0x00000000f3800000, 0x0000000100000000, 0x0000000100000000)
+  eden space 153600K, 2% used [0x00000000f3800000,0x00000000f3b5abb8,0x00000000fce00000)
+  from space 25600K, 0% used [0x00000000fce00000,0x00000000fce00000,0x00000000fe700000)
+  to   space 25600K, 0% used [0x00000000fe700000,0x00000000fe700000,0x0000000100000000)
+ ParOldGen       total 409600K, used 2318K [0x00000000da800000, 0x00000000f3800000, 0x00000000f3800000)
+  object space 409600K, 0% used [0x00000000da800000,0x00000000daa43a78,0x00000000f3800000)
+ Metaspace       used 9223K, capacity 9442K, committed 9984K, reserved 1058816K
+  class space    used 1050K, capacity 1122K, committed 1280K, reserved 1048576K
+```
+
+### 6.内存分配策略
+
+若对象在Eden出生并经历Minor GC仍然存活，并且能被Survivor容纳，则将被移动到Survivor空间，并将年龄设为1，对象在Survivor每经历一次Minor GC年龄就加1，若年龄到达一定阈值(默认15)则进入老年代，阈值可通过`-XX:MaxTenuringThreshold`设置，**针对不同年龄段的对象分配原则如下**
+
+* **对象优先分配到Eden，大对象直接分配到老年代**，尽量避免程序中出现过多大对象(很长的字符串，元素庞大的数组)，**JVM指定大于`-XX:PretenureSizeThreshold`参数的对象属于大对象**，这样可避免大对象在S0、S1中来回复制，产生大量内存复制开销
+
+* **长期存活的对象分配到老年代**
+
+* **对象年龄判断：S区相同年龄的所有对象所占空间大小大于S区空间的一半，则年龄大于等于该年龄的对象直接进入老年去**，无需等到`MaxTenuringThreshold`
+
+* **空间分配担保：发生Minor GC前JVM先检查老年代*最大连续可用空间*，若老年代最大连续空间大于新生代所有对象空间，则本次Minor GC是安全的，否则检查`-XX:HandlePromotionFailure`参数值是否允许担保失败，若允许则继续检查老年代最大连续可用空间是否大于历次晋升到老年代对象的平均大小，若大于则尝试一次有风险的Minor GC，若老年大最大连续空间小于历来晋升对象的平均大小或不允许失败担保，则改为一次Full GC**
+
+  > JDK7以后`-XX:HandlePromotionFailure`不再影响空间分配担保，即只需老年代最大连续空间大小大于新生代所有对象空间 或 大于历次晋升对象的平均值就进行Minor GC，否则Full GC，即`-XX:HandlePromotionFailure = true`
+
+### 7.TLAB
+
+堆区是线程共享区域，任何线程都可以访问，且对象实例创建在JVM中非常平凡，所以并发环境下从堆区划分内存线程不安全，但加锁影响分配速度，所以出现**TLAB避免多线程不安全的情况，同时提升内存分配吞吐量**
+
+Eden区满是因为为对象分配内存不足或**为TLAB分配内存不足**，TLAB(Thread Local Allocation Buffer)是**JVM为每个线程划分的私有缓冲区域，TLAB被包含在Eden区，每个TLAB只允许一个线程申请分配对象内存，但允许所有对象访问该区域**
+
+> 堆空间都是多个线程共享的么？
+>
+> 不一定，TLAB被每个线程独占
+
+开发者可通过`-XX:UseTLAB`设置是否开启TLAB(默认开启)，默认TLAB所占空间非常小，仅占Eden的1%，但可通过`-XX:TLABWasteTargetPercent`配置TLAB占Eden空间的百分比
+
+TLAB内对象申请分配内存失败，JVM尝试通过加锁机制确保数据操作的原子性，从而直接在Eden中分配内存
+
+![1657958539040](assets/1657958539040.png)
+
+### 8.总结一波堆空间的参数设置
+
+[Oracle官网(Ctrl+F搜索)](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html)
+
+* `-XX:+PrintFlagsInitial`：查看所有参数的默认初始值
+* `-XX:+PrintFlagsFinal`：查看所有参数的最终值
+* `-XX:+PrintGCDetails`：输出详细的GC处理日志
+* `-XX:+PrintGC`：打印GC简要信息
+* `jinfo -flag SurvivorRatio 进程id`：命令行中查看某个具体参数，`jps`查看当前运行中的进程
+* `-Xms`：初始堆空间内存，默认物理内存/64
+* `-Xmx`：最大堆空间内存，默认物理内存/4
+* `-Xmn`：设置新生代的大小，初始值及最大值
+* `-XX:NewRatio`：配置YoungGen:OldGen👈
+* `-XX:SurvivorRatio`：配置Eden👈:S0:S1
+* `-XX:MaxTenuringThreshold`：设置新生代垃圾的最大年龄
+* `-XX:HandlePromotionFalilure`：是否设置空间分配担保
+
+### 9.堆是分配对象的唯一选择吗？
+
+都这样问了那当然不是🙃，随着**逃逸分析**、**栈上分配**、**标量替换**等技术逐渐成熟，所有的对象都分配到堆上也渐渐变得不那么绝对
+
+#### 9.1.逃逸分析
+
+逃逸分析的主要行为是**分析对象动态作用域**，若未发生逃逸则可以分配到栈，随着方法结束栈空间被移除
+
+* 当某对象在方法被定义，对象只在方法内部使用，则认为没发生逃逸
+
+```java
+//未发生逃逸，可以栈上分配对象。
+public static String createStringBuffer(String s1, String s2) {
+    StringBuffer sb = new StringBuffer();
+    sb.append(s1);
+    sb.append(s2);
+    return sb.toString();
+}
+```
+
+* 当某对象在方法被定义，对象被外部方法引用，则认为发生逃逸
+
+```java
+//发生逃逸，不可以栈上分配对象。
+public static StringBuffer createStringBuffer(String s1, String s2) {
+    StringBuffer sb = new StringBuffer();
+    sb.append(s1);
+    sb.append(s2);
+    return sb;
+}
+```
+
+分析如下方法是否发生逃逸
+
+```java
+//如何快速的判断是否发生了逃逸分析？就看new的对象实体是否有可能在方法外被调用
+public class EscapeAnalysis {
+    public EscapeAnalysis obj;
+
+    //方法返回EscapeAnalysis对象，发生逃逸
+    public EscapeAnalysis getInstance() {
+        return obj == null ? new EscapeAnalysis() : obj;
+    }
+
+    //为成员属性赋值，发生逃逸
+    public void setObj() {
+        this.obj = new EscapeAnalysis();
+    }
+    //思考：如果当前的obj引用声明为static的？仍然会发生逃逸
+
+    //对象的作用域仅在当前方法中有效，没有发生逃逸
+    public void useEscapeAnalysis() {
+        EscapeAnalysis e = new EscapeAnalysis();
+    }
+
+    //引用成员变量的值，发生逃逸
+    public void useEscapeAnalysis1() {
+        EscapeAnalysis e = getInstance();
+        //getInstance().xxx()同样会发生逃逸
+    }
+}
+```
+
+JDK 6u23版本之后HotSpot中默认就已经开启了逃逸分析，之前版本可通过参数配置
+
+* ` -XX:+DoEscapeAnalysis`：显式开启逃逸分析
+* `-XX:+PrintEscapeAnalysis`：查看逃逸分析的筛选结果
+
+通过逃逸分析可知，**开发者能使用局部变量就尽量使用**
+
+经过逃逸分析，可对9.2、9.3、9.4进行**优化**
+
+#### 9.2.栈上分配
+
+JIT编译器在**编译期间**根据逃逸分析的结果发现某对象未逃逸，则可能被优化成**栈上分配**，栈内分配完后继续在栈内执行，最后随着线程结束栈空间被回收，**使用栈上分配无需GC**
+
+测试开启与未开启逃逸分析的性能对比，测试代码如下，改变参数设置
+
+```java
+/**
+ * 栈上分配
+ * 未开启逃逸分析：-Xms256m -Xmx256m -XX:-DoEscapeAnalysis -XX:+PrintGCDetails  48 ms
+ * 开启逃逸分析：-Xms256m -Xmx256m -XX:+DoEscapeAnalysis -XX:+PrintGCDetails   4 ms
+ */
+public class StackAllocation {
+    public static void main(String[] args) {
+        long start = System.currentTimeMillis();
+
+        for (int i = 0; i < 10000000; i++) {
+            alloc();
+        }
+
+        long end = System.currentTimeMillis();
+        // 查看执行时间
+        System.out.println("花费的时间为： " + (end - start) + " ms");
+        // 为了方便查看堆内存中对象个数，线程sleep
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void alloc() {
+        User user = new User(); //未发生逃逸
+    }
+
+    static class User {
+    }
+}
+```
+
+#### 9.3.同步省略
+
+同步的代价相当高，后果是降低并发性和性能，JIT编译器在**编译期间**根据逃逸分析的结果发现某对象未逃逸，则判断**同步块所使用的锁对象只能被同一个线程访问，可取消对该部分代码块的同步**，这样大大提高并发性和性能，该过程叫**同步省略**，也叫**锁消除**
+
+```java
+public void f() {
+    Object hollis = new Objecto();
+    synchronized(hollis) {//对hollis对象加锁，hollis未发生逃逸，所以会被优化成同步省略，代码如下
+        System.out.println(hollis);
+    }
+}
+-------------------------------------------
+public void f() {
+    Object hollis = new Object();
+	System.out.println(hollis);
+}
+```
+
+从下图可看出字节码中依然有Synchronized，只是**运行时被优化**
+
+![1657961918325](assets/1657961918325.png)
+
+#### 9.4.分离对象或标量替换
+
+标量(Scalar)指无法再分解成更小的数据的数据，Java中的原始数据类型就是标量，相对的，还可以分解的数据叫做聚合量(Aggregate)，Java中的对象就是聚合量
+
+JIT编译器在**编译期间**根据逃逸分析的结果发现某对象未逃逸，则表示**该对象不会被外界访问**，可将该对象成员变量分解成局部变量存于方法中，标量替换大大减少堆内存的占用，因为对象被分解就无需创建对象，那么就不再需要分配堆内存，**标量替换为栈上分配提供了很好的基础，即允许对象成员变量分散存于局部变量表中**
+
+```java
+public static void main(String args[]) {
+    alloc();
+}
+class Point {
+    private int x;
+    private int y;
+}
+private static void alloc() {
+    Point point = new Point(1,2);//未发生逃逸，替换代码如下
+    System.out.println("point.x = " + point.x + "; point.y = " + point.y);
+}
+-------------------------------------------
+private static void alloc() {
+    int x = 1;
+    int y = 2;
+    System.out.println("point.x = " + x + "; point.y = " + y);
+}
+```
+
+测试开启与未开启逃逸分析的性能对比，测试代码如下，改变参数设置
+
+```java
+/**
+ * 标量替换
+ * 未开启标量替换：-Xms100m -Xmx100m -XX:+DoEscapeAnalysis -XX:+PrintGC -XX:-EliminateAllocations   58 ms
+ * 开启标量替换：-Xms100m -Xmx100m -XX:+DoEscapeAnalysis -XX:+PrintGC -XX:+EliminateAllocations    4 ms
+ * -server -Xmx100m -Xms100m -XX:+DoEscapeAnalysis -XX:+PrintGC -XX:+EliminateAllocations
+ */
+public class ScalarReplace {
+    public static class User {
+        public int id;
+        public String name;
+    }
+
+    public static void alloc() {
+        User u = new User(); //未发生逃逸
+        u.id = 18;
+        u.name = "Jack";
+    }
+
+    public static void main(String[] args) {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 10000000; i++) {
+            alloc();
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("花费的时间为：" + (end - start) + " ms");
+    }
+}
+```
+
+#### 9.5.逃逸分析不足
+
+无法保证逃逸分析的性能消耗一定能高于他的消耗，虽然经过逃逸分析可以做标量替换、栈上分配、锁消除，但是逃逸分析自身也是需要进行一系列复杂的分析的，这其实也是一个相对耗时的过程
+
+> 极端的例子：经过逃逸分析后发现没有一个对象是不逃逸的，那这个逃逸分析的过程就白白浪费掉了
+
+## 八、方法区
 
 
 
@@ -551,7 +1034,22 @@ HELLO WORLD...
 
 
 
-## 方法区
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -559,134 +1057,14 @@ HELLO WORLD...
 
 > [参考文章1](https://blog.csdn.net/rrq_0324/article/details/109035773?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-3-109035773-blog-107146441.pc_relevant_multi_platform_whitelistv2&utm_relevant_index=6)	[参考文章2](https://blog.csdn.net/rrq_0324/article/details/109171470)
 
-堆区：新生代、老年代
-
-元数据区：常量池、方法元信息、类元信息
-
-
-
-
-
-
-
 
 
 1. 根据jvm规范，这些数据区中哪些会出现 内存溢出异常，分别是什么场景下出现?
 2. 这些数据区哪些是线程独有的，哪些是线程共享区?
 3. 每个区存储的数据的特点?
-4. 程序计数器是什么，它是线程独有的吗? 它是否有内存溢出问题.
-5. 
-8. 什么叫本地方法? 是否可以写一个例子来实现本地方法，以输出一个hello world?
-   10.什么叫本地方法栈?有什么作用?它是线程私有的吗? 它是否有可能抛出异常?
-9. jvm规范一定强制要求实现本地方法栈吗?
 10. 方法区是线程独有的吗?它是否有异常?它的作用?
 11. 方法区的演进, jdk7及以前，它叫什么? jdk8开始，这又叫什么. 
 12. 方法区或永久代的大小如何设置?
 
 
-
-## 常见调优工具
-
-![1657760578480](assets/1657760578480.png)
-
-下载插件：https://blog.csdn.net/jushisi/article/details/109655175?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-109655175-blog-119964128.pc_relevant_multi_platform_whitelistv2&spm=1001.2101.3001.4242.1&utm_relevant_index=2
-
-![1657761206483](assets/1657761206483.png)
-
-![1657761180136](assets/1657761180136.png)
-
-![1657761236631](assets/1657761236631.png)
-
-![1657761400755](assets/1657761400755.png)
-
-![1657761437834](assets/1657761437834.png)
-
-运行项目，出现视图
-
-![1657761863830](assets/1657761863830.png)
-
-查看详细信息
-
-![1657762108651](assets/1657762108651.png)
-
-```
-D:\develop\Java\jdk1.8.0_65\bin\java.exe -XX:+PrintGCDetails "-javaagent:D:\develop\IntelliJ IDEA 2020.1.2\lib\idea_rt.jar=14894:D:\develop\IntelliJ IDEA 2020.1.2\bin" -Dfile.encoding=UTF-8 -classpath D:\develop\Java\jdk1.8.0_65\jre\lib\charsets.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\deploy.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\access-bridge-64.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\cldrdata.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\dnsns.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\jaccess.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\jfxrt.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\localedata.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\nashorn.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunec.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunjce_provider.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunmscapi.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunpkcs11.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\zipfs.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\javaws.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jce.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jfr.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jfxswt.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jsse.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\management-agent.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\plugin.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\resources.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\rt.jar;E:\IdeaProjects\JVM\target\classes com.yc.Test03_visualVM.HeapInstance
-[GC (Allocation Failure) [PSYoungGen: 32586K->5094K(37888K)] 32586K->29947K(123904K), 0.0070588 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] 
-[GC (Allocation Failure) [PSYoungGen: 37829K->5115K(37888K)] 62681K->61379K(123904K), 0.0081835 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 5115K->0K(37888K)] [ParOldGen: 56263K->61203K(148480K)] 61379K->61203K(186368K), [Metaspace: 3780K->3780K(1056768K)], 0.0216438 secs] [Times: user=0.13 sys=0.00, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 32768K->5117K(37888K)] 93971K->93777K(186368K), 0.0124481 secs] [Times: user=0.02 sys=0.11, real=0.01 secs] 
-[GC (Allocation Failure) [PSYoungGen: 37828K->5115K(52224K)] 126489K->126491K(200704K), 0.0068903 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 5115K->0K(52224K)] [ParOldGen: 121376K->126266K(244736K)] 126491K->126266K(296960K), [Metaspace: 3783K->3783K(1056768K)], 0.0178061 secs] [Times: user=0.13 sys=0.00, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 46506K->5091K(52224K)] 172773K->172849K(296960K), 0.0243899 secs] [Times: user=0.09 sys=0.13, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 52116K->52091K(117760K)] 219874K->219850K(362496K), 0.0215176 secs] [Times: user=0.08 sys=0.16, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 114544K->63457K(125952K)] 282303K->282162K(370688K), 0.0387771 secs] [Times: user=0.05 sys=0.19, real=0.04 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 63457K->37328K(125952K)] [ParOldGen: 218704K->244617K(395264K)] 282162K->281946K(521216K), [Metaspace: 3788K->3788K(1056768K)], 0.0265873 secs] [Times: user=0.16 sys=0.08, real=0.03 secs] 
-[GC (Allocation Failure) [PSYoungGen: 99357K->99440K(181248K)] 343975K->344058K(576512K), 0.0707513 secs] [Times: user=0.05 sys=0.42, real=0.07 secs] 
-[GC (Allocation Failure) [PSYoungGen: 180579K->117239K(198656K)] 425197K->425047K(593920K), 0.0831903 secs] [Times: user=0.11 sys=0.47, real=0.09 secs] 
-[GC (Allocation Failure) [PSYoungGen: 198173K->136153K(232960K)] 505981K->505944K(628224K), 0.2245230 secs] [Times: user=0.17 sys=1.42, real=0.22 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 136153K->110689K(232960K)] [ParOldGen: 369791K->395004K(584704K)] 505944K->505693K(817664K), [Metaspace: 3788K->3788K(1056768K)], 0.3875346 secs] [Times: user=0.27 sys=0.78, real=0.39 secs] 
-[GC (Allocation Failure) [PSYoungGen: 207245K->96533K(253952K)] 602249K->602273K(838656K), 0.0333949 secs] [Times: user=0.06 sys=0.08, real=0.03 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 96533K->18603K(253952K)] [ParOldGen: 505739K->583476K(817664K)] 602273K->602080K(1071616K), [Metaspace: 3788K->3788K(1056768K)], 0.0684669 secs] [Times: user=0.06 sys=0.16, real=0.07 secs] 
-[GC (Allocation Failure) [PSYoungGen: 115371K->96279K(287744K)] 698848K->698359K(1105408K), 0.0171780 secs] [Times: user=0.13 sys=0.00, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 226247K->129497K(290304K)] 828328K->827677K(1107968K), 0.0496736 secs] [Times: user=0.19 sys=0.17, real=0.05 secs] 
-[GC (Allocation Failure) [PSYoungGen: 259219K->129691K(334848K)] 957399K->957336K(1162752K), 0.1049579 secs] [Times: user=0.20 sys=0.58, real=0.11 secs] 
-
-
-[Full GC (Ergonomics) [PSYoungGen: 129691K->129460K(334848K)] [ParOldGen: 827644K->827511K(1135104K)] 957336K->956972K(1469952K), [Metaspace: 3788K->3788K(1056768K)], 0.7630309 secs] [Times: user=2.55 sys=0.66, real=0.76 secs] 
-```
-
-```
-D:\develop\Java\jdk1.8.0_65\bin\java.exe -XX:+PrintGCDetails "-javaagent:D:\develop\IntelliJ IDEA 2020.1.2\lib\idea_rt.jar=2900:D:\develop\IntelliJ IDEA 2020.1.2\bin" -Dfile.encoding=UTF-8 -classpath D:\develop\Java\jdk1.8.0_65\jre\lib\charsets.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\deploy.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\access-bridge-64.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\cldrdata.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\dnsns.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\jaccess.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\jfxrt.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\localedata.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\nashorn.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunec.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunjce_provider.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunmscapi.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\sunpkcs11.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\ext\zipfs.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\javaws.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jce.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jfr.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jfxswt.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\jsse.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\management-agent.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\plugin.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\resources.jar;D:\develop\Java\jdk1.8.0_65\jre\lib\rt.jar;E:\IdeaProjects\JVM\target\classes com.yc.Test03_visualVM.HeapInstance
-[GC (Allocation Failure) [PSYoungGen: 32525K->5099K(37888K)] 32525K->29875K(123904K), 0.0093917 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] 
-[GC (Allocation Failure) [PSYoungGen: 37771K->5110K(37888K)] 62547K->61103K(123904K), 0.0078460 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 5110K->0K(37888K)] [ParOldGen: 55993K->61002K(144896K)] 61103K->61002K(182784K), [Metaspace: 3780K->3780K(1056768K)], 0.0157771 secs] [Times: user=0.09 sys=0.00, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 32768K->5098K(37888K)] 93770K->93552K(182784K), 0.0065602 secs] [Times: user=0.00 sys=0.06, real=0.01 secs] 
-[GC (Allocation Failure) [PSYoungGen: 37499K->5091K(52736K)] 125953K->125966K(197632K), 0.0074200 secs] [Times: user=0.03 sys=0.06, real=0.01 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 5091K->0K(52736K)] [ParOldGen: 120875K->125774K(241152K)] 125966K->125774K(293888K), [Metaspace: 3783K->3783K(1056768K)], 0.0240476 secs] [Times: user=0.08 sys=0.00, real=0.02 secs] 
-[GC (Allocation Failure) [PSYoungGen: 47615K->5094K(52736K)] 173390K->173550K(293888K), 0.0313306 secs] [Times: user=0.09 sys=0.14, real=0.03 secs] 
-[GC (Allocation Failure) [PSYoungGen: 52679K->46545K(108032K)] 221135K->221072K(349184K), 0.0277971 secs] [Times: user=0.08 sys=0.11, real=0.03 secs] 
-[GC (Allocation Failure) [PSYoungGen: 107337K->56802K(118272K)] 281864K->281715K(359424K), 0.0404652 secs] [Times: user=0.03 sys=0.11, real=0.04 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 56802K->40638K(118272K)] [ParOldGen: 224912K->240978K(395776K)] 281715K->281616K(514048K), [Metaspace: 3788K->3788K(1056768K)], 0.0260354 secs] [Times: user=0.13 sys=0.03, real=0.03 secs] 
-[GC (Allocation Failure) [PSYoungGen: 101801K->68070K(154624K)] 342779K->342890K(550400K), 0.0383453 secs] [Times: user=0.14 sys=0.20, real=0.04 secs] 
-[GC (Allocation Failure) [PSYoungGen: 154208K->79869K(166400K)] 429028K->428833K(562176K), 0.0210915 secs] [Times: user=0.08 sys=0.00, real=0.02 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 79869K->32994K(166400K)] [ParOldGen: 348963K->395666K(586752K)] 428833K->428660K(753152K), [Metaspace: 3788K->3788K(1056768K)], 0.0457681 secs] [Times: user=0.09 sys=0.01, real=0.05 secs] 
-[GC (Allocation Failure) [PSYoungGen: 119474K->117518K(224768K)] 515140K->515173K(811520K), 0.0842301 secs] [Times: user=0.24 sys=0.22, real=0.08 secs] 
-[GC (Allocation Failure) [PSYoungGen: 218795K->141309K(242688K)] 616451K->616304K(829440K), 0.0276550 secs] [Times: user=0.11 sys=0.00, real=0.03 secs] 
-[GC (Allocation Failure) [PSYoungGen: 242357K->100975K(302080K)] 717352K->717156K(919040K), 0.2265162 secs] [Times: user=0.13 sys=1.39, real=0.23 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 100975K->100806K(302080K)] [ParOldGen: 616180K->616081K(871936K)] 717156K->716887K(1174016K), [Metaspace: 3788K->3788K(1056768K)], 0.2569016 secs] [Times: user=0.41 sys=0.39, real=0.26 secs] 
-[GC (Allocation Failure) [PSYoungGen: 237998K->137066K(306176K)] 854079K->854003K(1178112K), 0.1283725 secs] [Times: user=0.22 sys=0.66, real=0.13 secs] 
-[GC (Allocation Failure) [PSYoungGen: 273598K->136483K(366080K)] 990534K->990351K(1238016K), 0.4650646 secs] [Times: user=0.13 sys=2.97, real=0.47 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 136483K->118807K(366080K)] [ParOldGen: 853868K->871223K(871936K)] 990351K->990030K(1238016K), [Metaspace: 3788K->3788K(1056768K)], 0.2819435 secs] [Times: user=0.24 sys=0.86, real=0.28 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 299751K->281545K(366080K)] [ParOldGen: 871223K->871221K(871936K)] 1170974K->1152766K(1238016K), [Metaspace: 8196K->8196K(1056768K)], 3.9181715 secs] [Times: user=15.47 sys=4.13, real=3.92 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281544K(366080K)] [ParOldGen: 879979K->879978K(880128K)] 1161557K->1161523K(1246208K), [Metaspace: 8196K->8196K(1056768K)], 0.2491159 secs] [Times: user=0.33 sys=0.25, real=0.25 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281544K->281544K(366080K)] [ParOldGen: 879978K->879978K(880128K)] 1161523K->1161523K(1246208K), [Metaspace: 8196K->8196K(1056768K)], 0.1460397 secs] [Times: user=0.02 sys=0.25, real=0.15 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281557K(366080K)] [ParOldGen: 899363K->899362K(900096K)] 1180941K->1180920K(1266176K), [Metaspace: 8196K->8196K(1056768K)], 0.1231576 secs] [Times: user=0.00 sys=0.25, real=0.12 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281558K(366080K)] [ParOldGen: 917513K->917512K(918016K)] 1199091K->1199070K(1284096K), [Metaspace: 8196K->8196K(1056768K)], 0.1199277 secs] [Times: user=0.13 sys=0.31, real=0.12 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281570K(366080K)] [ParOldGen: 931055K->931055K(931328K)] 1212633K->1212625K(1297408K), [Metaspace: 8196K->8196K(1056768K)], 0.1156576 secs] [Times: user=0.05 sys=0.34, real=0.12 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281570K(366080K)] [ParOldGen: 931055K->931055K(931328K)] 1212633K->1212625K(1297408K), [Metaspace: 8196K->8196K(1056768K)], 0.1209292 secs] [Times: user=0.02 sys=0.34, real=0.12 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281570K(366080K)] [ParOldGen: 944687K->944686K(945152K)] 1226265K->1226256K(1311232K), [Metaspace: 8196K->8196K(1056768K)], 0.1369434 secs] [Times: user=0.16 sys=0.41, real=0.14 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281570K(366080K)] [ParOldGen: 960084K->960084K(960512K)] 1241663K->1241654K(1326592K), [Metaspace: 8196K->8196K(1056768K)], 0.0230092 secs] [Times: user=0.05 sys=0.06, real=0.02 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281570K->281570K(366080K)] [ParOldGen: 960084K->960084K(960512K)] 1241654K->1241654K(1326592K), [Metaspace: 8196K->8196K(1056768K)], 0.0110208 secs] [Times: user=0.02 sys=0.00, real=0.01 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281570K(366080K)] [ParOldGen: 960576K->960576K(961024K)] 1242155K->1242147K(1327104K), [Metaspace: 8196K->8196K(1056768K)], 0.0102843 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
-[Full GC (Allocation Failure) [PSYoungGen: 281570K->281463K(366080K)] [ParOldGen: 960576K->960523K(961024K)] 1242147K->1241986K(1327104K), [Metaspace: 8196K->8164K(1056768K)], 2.2795142 secs] [Times: user=13.20 sys=2.19, real=2.28 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281578K->281463K(366080K)] [ParOldGen: 961770K->961770K(962048K)] 1243349K->1243234K(1328128K), [Metaspace: 8164K->8164K(1056768K)], 0.0803552 secs] [Times: user=0.00 sys=0.00, real=0.08 secs] 
-[Full GC (Ergonomics) [PSYoungGen: 281570K->281506K(366080K)] [ParOldGen: 976914K->976914K(977408K)] 1258485K->1258421K(1343488K), [Metaspace: 8164K->8164K(1056768K)], 0.0261823 secs] [Times: user=0.02 sys=0.00, real=0.03 secs] 
-[Full GC (Allocation Failure) [PSYoungGen: 281506K->281506K(366080K)] [ParOldGen: 976914K->976914K(977408K)] 1258421K->1258421K(1343488K), [Metaspace: 8164K->8164K(1056768K)], 0.0241203 secs] [Times: user=0.02 sys=0.00, real=0.03 secs] 
-[Full GC (Ergonomics) Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-	at com.yc.Test03_visualVM.HeapInstance.<init>(HeapInstance.java:13)
-	at com.yc.Test03_visualVM.HeapInstance.main(HeapInstance.java:18)
-[PSYoungGen: 281578K->0K(366080K)] [ParOldGen: 976919K->8199K(834048K)] 1258497K->8199K(1200128K), [Metaspace: 8178K->8178K(1056768K)], 0.0792789 secs] [Times: user=0.11 sys=0.03, real=0.08 secs] 
-Heap
- PSYoungGen      total 366080K, used 0K [0x00000000d6200000, 0x00000000fa700000, 0x0000000100000000)
-  eden space 181760K, 0% used [0x00000000d6200000,0x00000000d6200080,0x00000000e1380000)
-  from space 184320K, 0% used [0x00000000ed380000,0x00000000ed380000,0x00000000f8780000)
-  to   space 196608K, 0% used [0x00000000e1380000,0x00000000e1380000,0x00000000ed380000)
- ParOldGen       total 834048K, used 8199K [0x0000000082600000, 0x00000000b5480000, 0x00000000d6200000)
-  object space 834048K, 0% used [0x0000000082600000,0x0000000082e01f40,0x00000000b5480000)
- Metaspace       used 8178K, capacity 8280K, committed 8448K, reserved 1056768K
-  class space    used 970K, capacity 1010K, committed 1024K, reserved 1048576K
-
-Process finished with exit code 1
-
-```
 
