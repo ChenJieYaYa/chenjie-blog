@@ -8,7 +8,7 @@
 
 ## 💡技能树
 
-[Redis](/12.Redis/README)	|	[多路复用](/6.JavaWeb网络编程/多路复用)	|	[JVM](/15.JVM/README)
+[Nginx](/13.Nginx/README)	|	[Redis](/12.Redis/README)	|	[多路复用](/6.JavaWeb网络编程/多路复用)	|	[JVM](/15.JVM/README)	|	[分布式锁](/其他/分布式锁)
 
 
 
