@@ -1,6 +1,6 @@
-# 🚥 Redis系列
+# 🚥 Zookeeper系列
 
-### [Redis概述](/12.Redis/Redis概述)	|	[Redis常见命令](/12.Redis/Redis常见命令)	|	[Redis分步式锁](/12.Redis/Redis分步式锁)	
+### [Zookepper概述](/11.Zookeeper/Zookepper概述)	|	[Zookeeper常见命令](/11.Zookeeper/Zookeeper常见命令)	|	[Zookeeper与Java](/11.Zookeeper/Zookeeper与Java)	|	[Zookeeper实现XXX](/11.Zookeeper/Zookeeper实现XXX)
 
 
 
@@ -8,5 +8,5 @@
 
 
 
-### [Linux安装Redis](/12.Redis/Linux安装Redis)	|	[Docker安装Redis](/12.Redis/Docker安装Redis)	
+### [Docker安装Zookeeper](/11.Zookeeper/Docker安装Zookeeper)	
 
