@@ -141,20 +141,20 @@ Leader选举完毕后，Learner(Follower和Observer的统称)向Leader注册自�
 
 数据同步通常分为如下四种
 
-* **直接差异化同步(DIFF同步)**：minCommittedLog < peerLastZxid < maxCommittedLog时
-* **先回滚再差异化同步(TRUNC+DIFF同步)**：当新Leader发现某个Learner包含自己没有的事务记录，那么使Learner事务回滚，直到Leader上存在，同时也是最接近peerLastZxid的ZXID
-* **仅回滚同步(TRUNC同步)**：peerLastZxid > maxCommittedLog时
-* **全量同步(SNAP同步)**：minCommittedLog > peerLastZxid或Leader无Proposal缓存队列且peerLastZxid不等于lastProcessZxid
+* **直接差异化同步(DIFF同步)：**minCommittedLog < peerLastZxid < maxCommittedLog时
+* **先回滚再差异化同步(TRUNC+DIFF同步)：**当新Leader发现某个Learner包含自己没有的事务记录，那么使Learner事务回滚，直到Leader上存在，同时也是最接近peerLastZxid的ZXID
+* **仅回滚同步(TRUNC同步)：**peerLastZxid > maxCommittedLog时
+* **全量同步(SNAP同步)：**minCommittedLog > peerLastZxid或Leader无Proposal缓存队列且peerLastZxid不等于lastProcessZxid
 
 ## 九、Zookeeper与CAP理论
 
-### 1.什么是CPA理论
+### 1.什么是CAP理论
 
-CPA分别指一致性(Consistency)、可用性(Availability)、分区容错性(Partition tolerance)，在分步式系统中，**不可能**同时满足CPA
+CAP分别指一致性(Consistency)、可用性(Availability)、分区容错性(Partition tolerance)，在分步式系统中，**不可能**同时满足CAP
 
 由于网络硬件肯定会出现延迟丢包等问题，但是在分布式系统中，必须保证**部分网络通信问题不会导致整个服务器集群瘫痪**，另外**当网络故障消除时依然可以保证数据一致性**，所以必须保证分区容错性，剩下的一致性与可用性不可兼得，当保证一致性时，那么不能让用户访问无法数据同步的机器，当保证可用性时，那么能让用户访问无法数据同步的机器
 
-所以CPA只有两种组合方式，即CP(Zookeeper某Client心跳失联后被快速剔除)、PA(Eureka某Client心跳失联后启动自我保护机制，而不是剔除该Client，仍然可以提供服务)
+所以CAP只有两种组合方式，即CP(Zookeeper某Client心跳失联后被快速剔除)、(Eureka某Client心跳失联后启动自我保护机制，而不是剔除该Client，仍然可以提供服务)
 
 ### 2.ZK是CP还是AP？
 
