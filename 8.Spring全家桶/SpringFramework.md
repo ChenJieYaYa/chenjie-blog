@@ -219,7 +219,7 @@ public class AppConfig {
 
 #### 2.2.@Component+@ComponentScan
 
-`@Component`是托管注解，表示这是托管类，需要被Spring托管，**`@Repository`、`@Service`、`@Controller`注解是`@Component`的具体业务场景，分别用于DAO层**、业务层、控制层，该注解适用于托管自己写的类
+`@Component`是托管注解，表示这是托管类，需要被Spring托管，**`@Repository`、`@Service`、`@Controller`注解是`@Component`的具体业务场景**，分别用于DAO层、业务层、控制层，该注解适用于托管自己写的类
 
 `@ComponentScan`**配置于启动类**，用于扫描`@Component`注解，并将`@Component`的类托管，该注解含以下几种重要参数
 
@@ -950,7 +950,7 @@ private static BeanDefinitionHolder registerPostProcessor(
 //OK到这开始往回退，*<n>*后面接着讲解代码的作用，直接退到*<23>*
 ```
 
-#### 5.3.手动配置的Bean如何被加载？
+#### 5.3.手动配置的Bean如何被加载？（TODO）
 
 `this()`源代码如下，一步步深入，此处涉及**SPI、反射**的知识
 
@@ -988,103 +988,20 @@ static {
          //用来支持@Inject，@Name注解，这两个注解需要手动导包jsr330  该jar包可能没得   就catch让这个为空
         javaxInjectProviderClass = 
             ClassUtils.forName("javax.inject.Provider", DefaultListableBeanFactory.class.getClassLoader());
-        //ClassUtils是反射的帮助类，是一种反射字节码技术，5.4中具体讲解
+        //ClassUtils是反射的帮助类，是一种反射字节码技术
         
     } catch (ClassNotFoundException ex) {//用户可能不需要jsr330.jar，若用户没有导入该jar，则catch处理，设置javaxInjectProviderClass为空
         // JSR-330 API not available - Provider interface simply not supported then. 表示暂时不支持SPI机制，那么什么是SPI机制？？？为什么出现SPI机制？？
         //SPI：Service Provider Interface，服务发现机制，通过ClassPath下的META-INF/services文件夹查找文件(文件名就是接口全路径)，自动加载文件中所定义的类(文件的内容就是类的全路径)
-        //在try块中我们发现通过"javax.inject.Provider"全路径反射技术加载Provider类，类的路径是写死的！！非常不灵活，不容易扩展，所以出现SPI，5.5中具体讲解！！！      
+        //在try块中我们发现通过"javax.inject.Provider"全路径反射技术加载Provider类，类的路径是写死的！！非常不灵活，不容易扩展，所以出现SPI，5.4中具体讲解！！！      
         javaxInjectProviderClass = null;
     }
 }
 ```
 
-#### 5.4.ClassUtils
-
-ClassUtils是反射的帮助类，是一种反射字节码技术，说到反射字节码技术那么肯定涉类加载和及双亲委派，请看[类加载和双亲委派](/16.JVM/类加载和双亲委派)中的详细讲解，此处重点讲解加载过程，首先需要通过全路径名获取类的二进制字节流文件，字节流从何处来？如下，然后将字节流文件静态数据结构转化为方法区中运行的数据结构，最后在内存中生成代表这个类的Class对象，作为方法区中该类数据结构的访问入口
-
-* 压缩包(jar war ear)中获取
-* 从网络中获取(Apple技术)
-* **从运行过程中动态生成(动态代理)**，这种方式可通过`Proxy.newInstance()`动态的获取，满足随用随加载的需求
-* 从其他文件生成(JSP文件生成class类)
-* 从数据库中读取
-
-开始读源码
-
-```java
-javaxInjectProviderClass = 
-            ClassUtils.forName("javax.inject.Provider", 	DefaultListableBeanFactory.class.getClassLoader());
-//forName	*<1>*
-```
 
 
-
-```java
-public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
-    throws ClassNotFoundException, LinkageError {
-
-    Assert.notNull(name, "Name must not be null");
-
-    Class<?> clazz = resolvePrimitiveClassName(name);
-    if (clazz == null) {
-        clazz = commonClassCache.get(name);
-    }
-    if (clazz != null) {
-        return clazz;
-    }
-    //---------------校验工作
-
-    // "java.lang.String[]" style arrays
-    if (name.endsWith(ARRAY_SUFFIX)) {
-        String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
-        Class<?> elementClass = forName(elementClassName, classLoader);
-        return Array.newInstance(elementClass, 0).getClass();
-    }
-
-    // "[Ljava.lang.String;" style arrays
-    if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
-        String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
-        Class<?> elementClass = forName(elementName, classLoader);
-        return Array.newInstance(elementClass, 0).getClass();
-    }
-
-    // "[[I" or "[[Ljava.lang.String;" style arrays
-    if (name.startsWith(INTERNAL_ARRAY_PREFIX)) {
-        String elementName = name.substring(INTERNAL_ARRAY_PREFIX.length());
-        Class<?> elementClass = forName(elementName, classLoader);
-        return Array.newInstance(elementClass, 0).getClass();
-    }
-
-
-    ClassLoader clToUse = classLoader;
-    if (clToUse == null) {
-        clToUse = getDefaultClassLoader();
-    }
-    try {
-        return Class.forName(name, false, clToUse);
-    } catch (ClassNotFoundException ex) {
-        int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
-        if (lastDotIndex != -1) {
-            String innerClassName =
-                name.substring(0, lastDotIndex) + INNER_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
-            try {
-                return Class.forName(innerClassName, false, clToUse);
-            } catch (ClassNotFoundException ex2) {
-                // Swallow - let original exception get through
-            }
-        }
-        throw ex;
-    }
-}
-```
-
-
-
-
-
-
-
-#### 5.5.SPI
+#### 5.4.SPI
 
 5.3中我们了解到`JSR-330`实际不支持SPI机制，那么支持SPI机制是怎样的呢？？
 
@@ -1724,101 +1641,1266 @@ private class LazyIterator implements Iterator<S>{
 }
 ```
 
+## 四、生命周期回调方法
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-①Spring的源码学习建议下载源码，使用gradle编译，这样就可以写注解啦
-
-②学习目标
-
-* Spring代码风格，启示自己，明确以后要怎么做
-* 学习过的知识是如何实现的？例如路径问题如何处理？异常如何处理？使用了哪些设计模式？学习过的注解如何实现？如Component的includeFilters和excludeFilters、Component扫描Service、Repository、生命周期如何实现
-
-③编写测试代码等会有用
+### 1.@Bean(initMethod = “初始化方法名”, destroyMethod = “销毁方法名”)
 
 ```java
-//Dao层接口
-public interface RepositoryDao {
-	public void add();
+@Component("p")
+public class Person {
+    public Person() {
+        System.out.println("person的构造方法");
+    }
+    public void a() {
+        System.out.println("a是初始化操作");
+    }
+    public void b() {
+        System.out.println("b是销毁操作");
+    }
 }
 ```
 
 ```java
-//Dao层实现类，用@Repository+@Component托管
-@Repository
-public class RepositoryDaoImpl implements RepositoryDao {
-
-	@Override
-	public void add() {
-		System.out.println("CustDaoImpl的add()");
-	}
-}
-```
-
-```java
-//业务层，使用@Service+@Component扫描
-@Service
-public class ServiceImpl {
-	@Autowired//使用IOC注解
-	private RepositoryDao custDao;
-
-	public void add() {
-		System.out.println("业务层的add");
-		custDao.add();
-	}
-}
-```
-
-```java
-//将来用于通过@Configuration+@Bean托管的类
-public class ConfigBean { }
-```
-
-```java
-//配置类
 @Configuration
-@ComponentScan(basePackages = "test.Test01_IOC_DI")
-public class AppConfig {
-	@Bean
-	public ConfigBean configBean() {
-		return new ConfigBean();
+@ComponentScan("com.yc.test6")
+public class AppConfig6 {
+	//注释这一段，也会调用构造方法以及初始化方法
+    @Bean(initMethod = "a", destroyMethod = "b")
+    public Person p() {
+        return new Person();
+    }
+}
+```
+
+```java
+static ApplicationContext context;
+@BeforeClass
+public static void initClass() {
+    context = new AnnotationConfigApplicationContext(AppConfig6.class);
+}
+@Test
+public void testShow1() {
+    Person person = context.getBean("p", Person.class);
+    System.out.println(person);
+
+    //测试销毁
+    ((AnnotationConfigApplicationContext) context).close();
+}
+---------------------------------------------
+person的构造方法
+a是初始化操作
+com.yc.test6.Person@4facf68f
+b是销毁操作
+```
+
+### 2.@PostConstruct+@PreDestroy
+
+顾名思义，构造后+销毁前
+
+```java
+@Component("p")
+public class Person {
+    public Person() {
+        System.out.println("person的构造方法");
+    }
+    @PostConstruct//争对自己的类
+    public void a() {
+        System.out.println("a是初始化操作");
+    }
+    @PreDestroy
+    public void b() {
+        System.out.println("b是销毁操作");
+    }
+    
+    @Value("hello")
+	private String name;
+    public void setName(String n) {
+    	System.out.println("setName");
+        this.name = n;
+    }
+}
+---------------------------------------------
+person的构造方法
+setName//属性的设置实际上是在初始化之前，构造方法之后完成的
+a是初始化操作
+com.yc.test6.Person@4facf68f
+b是销毁操作
+```
+
+### 3.InitializingBean+DisposableBean接口
+
+接口InitializingBean实现`afterPropertiesSet()`，调用时间与@PostConstruct相同；接口DisposableBean实现`destroy()`，调用时间与@PreDestroy相同
+
+```java
+@Component
+public class Apple implements InitializingBean, DisposableBean{
+    public Apple() {
+        System.out.println("Apple构造");
+    }
+
+    private String name;
+    @Value("苹果")
+    public void setName(String name) {
+        System.out.println("setName方法");
+        this.name = name;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("构造方法之后：afterPropertiesSet");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("销毁：destroy");
+    }
+}
+---------------------------------------------
+Apple构造
+setName方法
+构造方法之后：afterPropertiesSet
+销毁：destroy
+```
+
+### 4.init()+destroy()
+
+直接在类中实现这两个方法即可，即方法名使用这两，**约定重于配置**
+
+### 5.接口Lifecycle
+
+![1659352383827](assets/1659352383827.png)
+
+### 6.BeanPostProcessor
+
+```java
+@Component("apple")
+public class Apple {
+    public Apple() {
+        System.out.println("Apple-构造方法");
+    }
+
+    private String name;
+    @Value("苹果")
+    public void setName(String name) {
+        System.out.println("Apple-setName方法");
+        this.name = name;
+    }
+    @PostConstruct
+    public void after() {
+        System.out.println("Apple-初始化方法");
+    }
+    @PreDestroy
+    public void destroy() {
+        System.out.println("Apple-destroy");
+    }
+}
+```
+
+```java
+@Component("person")
+public class Person {
+    public Person() {
+        System.out.println("Person-构造方法");
+    }
+
+    private String name;
+    @Value("张三")
+    public void setName(String name) {
+        System.out.println("Person-setName方法");
+        this.name = name;
+    }
+    @PostConstruct
+    public void after() {
+        System.out.println("Person-初始化方法");
+    }
+    @PreDestroy
+    public void destroy() {
+        System.out.println("Person-destroy");
+    }
+}
+```
+
+```java
+@Component
+public class MyBeanPostProcessor implements BeanPostProcessor {
+    //初始化前
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(beanName + "初始化前：BeforeInitialization");
+        return bean;
+    }
+    //初始化后
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(beanName + "初始化后：AfterInitialization");
+        return bean;
+    }
+}
+```
+
+```java
+@Configuration
+@ComponentScan("com.yc.test8")
+public class AppConfig8 {  }
+```
+
+```java
+public class testAppConfig8 {
+    static ApplicationContext context;
+    @BeforeClass
+    public static void initClass() {
+        context = new AnnotationConfigApplicationContext(AppConfig8.class);
+    }
+
+    @Test
+    public void testShow1() {
+        ((AnnotationConfigApplicationContext) context).close();
+    }
+}
+---------------------------------------------
+appConfig8初始化前：BeforeInitialization
+appConfig8初始化后：AfterInitialization
+Apple-构造方法
+Apple-setName方法
+apple初始化前：BeforeInitialization
+Apple-初始化方法
+apple初始化后：AfterInitialization
+Person-构造方法
+Person-setName方法
+person初始化前：BeforeInitialization
+Person-初始化方法
+person初始化后：AfterInitialization
+Person-destroy
+Apple-destroy
+```
+
+## 五、测试
+
+### 1.普通@Test
+
+```java
+public class Test1 {
+    static ApplicationContext ac;
+    
+    @BeforeClass
+    public static void init() {
+        ac = new AnnotationConfigApplicationContext(AppConfig.class);
+    }
+    @Test
+    public void show_Test() {
+        ...
+    }
+}
+```
+
+### 2.自动注入
+
+`@RunWith+@ContextConfiguration+@Autowired`，需要导包，`ApplicationContext`容器通过`@RunWith+@ContextConfiguration`注解已经创建好，自动注入即可
+
+```java
+@RunWith(value = SpringJUnit4ClassRunner.class)//导包
+@ContextConfiguration(classes = {AppConfig.class})//加载配置文件
+public class Test2 {
+    @Autowired
+    private ApplicationContext ac;
+    @Autowired
+    private Container c;
+    @Autowired
+    private Random r;
+
+    @Test
+    public void show_Test() {
+        ...
+    }
+}
+```
+
+## 六、AOP
+
+### 1.动态代理
+
+静态代理代理的目标类是确定的，每个目标类都要创建对应的代理类，非常不灵活，所以出现动态代理
+
+动态代理可以代理任意目标类，更加灵活，不用为每个目标类都创建代理类，从JVM角度，动态代理在运行期生成类字节码，动态代理又分为一下几种
+
+①JDK面向接口
+
+```java
+1.回调器：实现InvocationHandler接口，定义目标target类，目标类是一个接口实现类
+	public class CustomInvocationHandler implements InvocationHandler {
+	    private Object target;//目标类引用
+	    public CustomInvocationHandler(Object target) {this.target = target;}
+	
+	    //生成代理对象，代理接口中所有方法
+	    //(类加载器/字节码加载器，目标类所有接口，激活时的回调处理器)
+	    public Object createInstance() {
+	        return Proxy.newProxyInstance(this.getClass().getClassLoader(),
+	                target.getClass().getInterfaces(), this);
+	    }
+	
+	    //实现一个接口  对目标类生成代理对象
+	    //感知到客户端调用被代理的方法，自动回调invoke()，激活对应方法
+	    @Override
+	    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+	        System.out.println("Before invocation");
+	        Object retVal = method.invoke(target, args);
+	        //相当于调用了目标类的sayHello()   target.method(args)
+	        System.out.println("After invocation");
+	        return retVal;
+	    }
+	}
+2.Hello接口
+	public interface Hello {
+	    public void sayHello(String name);
+	    public void bye();
+	}
+3.HelloImpl接口实现类
+	public class HelloImpl implements Hello {
+	    @Override
+	    public void sayHello(String name) {
+	        System.out.println("Hello:" + name);
+	    }
+	    @Override
+	    public void bye() {
+	        System.out.println("bye");
+	    }
+	}
+4.测试类
+	public class TestMain {
+	    public static void main(String[] args) {
+	        //保存生成的字节码文件 com.sun... -->为源码解读做准备
+	        System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+	
+	        CustomInvocationHandler handler = new CustomInvocationHandler(new HelloImpl());
+	
+	        //生成代理类对象 $Proxy -->生成字节码的时机：运行期由jdk动态代理来生成字节码，编译块，运行慢(动态代理机制)
+	        Hello proxy = (Hello) handler.createInstance();
+	        //自动激活invoke
+	        proxy.sayHello("hhhh");//$proxy0.sayHello()
+	        proxy.bye();
+	    }
+	}
+```
+
+②CGLIB面向继承
+
+```java
+1.使用前导入jar包
+	<dependency>
+		<!--asm 字节码生成  框架-->
+		<groupId>cglib</groupId>
+		<artifactId>cglib</artifactId>
+		<version>3.3.0</version>
+	</dependency>
+2.方法拦截器：实现MethodInterceptor接口，定义目标target类
+	public class MyInterceptor implements MethodInterceptor {
+	    //生成代理对象
+	    public Enhancer enhancer = new Enhancer();
+	    //目标对象
+	    private Object target;
+	
+	    public MyInterceptor(Object target) {this.target = target;}
+	
+	    //获取一个代理对象
+	    public Object createInstance() {
+	    	enhancer.setClassLoader(this.target.getClassLoader());
+	        enhancer.setSuperclass(this.target.getClass());
+	        //设置被代理方法时的回调
+	        enhancer.setCallback(this);
+	        //生成代理对象
+	        return enhancer.create();
+	    }
+	
+	    //自动回调
+	    @Override
+	    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+	        System.out.println("Before invocation");
+	        //目标方法
+	        Object result = methodProxy.invokeSuper(target, objects);
+	        System.out.println("After invocation");
+	        return result;
+	    }
+	}
+3.HelloImpl：未实现接口
+	public class HelloImpl {
+	    public void sayHello(String name) {
+	        System.out.println("Hello:" + name);
+	    }
+	    public void bye() {
+	        System.out.println("bye");
+	    }
+	}
+4.测试类
+	public class TestMain {
+	    public static void main(String[] args) {
+	        //保存生成的字节码文件 com.sun...
+	        System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+	
+	        CustomInvocationHandler handler = new CustomInvocationHandler(new HelloImpl());
+	
+	        Hello proxy = (Hello) handler.createInstance();
+	        proxy.sayHello("hhhh");
+	        proxy.bye();
+	    }
+	}
+```
+
+### 2.什么是AOP？
+
+AOP指面向切面编程，其中有几个重要的概念，如下
+
+* **Aspect** ：功能模块切入多个类中
+* **Advice**：切入点上的行为，即新功能
+* **Target** ：目标类，待增强功能的类
+* **Proxy** ：代理类，目标类+切面类生成新类，实际调用的也是该类中的方法
+* **Pointcut** ：切入点，新功能切入的点
+* **JoinPoint** ：执行点，与切入点匹配
+
+### 3.AOP思想
+
+![1659353900675](assets/1659353900675.png)
+
+![1659353927379](assets/1659353927379.png)
+
+### 4.AOP的使用
+
+①导包
+
+```java
+<dependency>
+	<groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>1.9.8</version>
+</dependency>
+```
+
+②代理类，即配置类，加上注解`@EnableAspectJAutoProxy`，将自动检测@Aspect
+
+```java
+@Configuration
+@ComponentScan("com.yc.aspectj1")
+//自动检测@Aspect
+@EnableAspectJAutoProxy
+public class AppConfig { }
+```
+
+③切面类
+
+`@Aspect`用于切面类上，此注解与`@Component`一起使用；`@Pointcut("execution(* transfer(..))")`是切入点表达式，用于方法之上，格式是`execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern) throws-pattern?)`；`@Before/@Around/…`描述切入点位置，`@Before`表示前置增强，参数`JoinPoint`，`@Around`表示环绕增强，即方法某部分先执行，某部分后执行，参数`ProceedingJoinPoint`，返回Object
+
+```java
+@Aspect//切面类
+@Component
+public class MyAspectj {
+    @Pointcut("execution(* com.yc.aspectj1.UserImpl.add(..))")
+    public void a() {
+    }
+
+    //1.前置增强，借助@Pointcut的实现方式
+    @Before("com.yc.aspectj1.MyAspectj.a()")
+    public void before() {
+        System.out.println("===before===");
+    }
+
+    //2.后置增强，不借助@Pointcut的实现方式
+    @After("execution(* com.yc.aspectj1.UserImpl.add(..))")
+    public void after() {
+        System.out.println("===after===");
+    }
+
+    @Around("execution(* com.yc.aspectj1.UserImpl.add(..))")
+    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("===around 前===");
+        Object obj = joinPoint.proceed();//执行方法
+        System.out.println("===around 后===");
+    }
+}
+-------------------------------------------------
+public interface IUser {
+    public void add();
+}
+-------------------------------------------------
+@Component("user")
+public class UserImpl implements IUser {
+    @Override
+    public void add() {
+        System.out.println("添加用户1");
+        System.out.println("添加用户2");
+        System.out.println("添加用户3");
+        System.out.println("添加用户4");
+    }
+}
+-------------------------------------------------
+public class Test {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        //ClassCastException: com.sun.proxy.$Proxy18 cannot be cast to com.yc.aspectj1.UserImpl ----> 取出接口类型
+        IUser user = (IUser) context.getBean("user");
+        user.add();
+    }
+}
+```
+
+结果如下
+
+![1659354642956](assets/1659354642956.png)
+
+### 5.合并切入点
+
+```java
+@Pointcut("execution(public * *(..))")
+private void anyPublicOperation() {} 
+
+@Pointcut("within(com.xyz.myapp.trading..*)")
+private void inTrading() {} 
+
+@Pointcut("anyPublicOperation() && inTrading()")//某包下的所有public方法
+private void tradingOperation() {} 
+```
+
+### 6.AOP源码
+
+测试代码
+
+```java
+//保存生成的字节码文件 com.misc...
+System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+CustomInvocationHandler handler = new CustomInvocationHandler(new HelloImpl());
+
+//生成代理类对象 $Proxy0 
+Hello proxy = (Hello) handler.createInstance();//createInstance	*<1>*
+//自动激活invoke
+proxy.sayHello("hhhh");//$proxy0.sayHello()	*<1>*
+proxy.bye();
+```
+
+```java
+public Object createInstance() {
+	//newProxyInstance	*<2>*
+	return Proxy.newProxyInstance(CustomInvocationHandler.class.getClassLoader(),
+			target.getClass().getInterfaces(),
+			this);
+}
+```
+
+```java
+@CallerSensitive
+public static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHandler h)throws IllegalArgumentException{
+	//h不能为空
+	Objects.requireNonNull(h);
+
+	final Class<?>[] intfs = interfaces.clone();
+	final SecurityManager sm = System.getSecurityManager();
+	if (sm != null) {
+		checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+	}
+	//以上是数据校验部分，安全机制
+
+	//生成字节码部分(类加载器，接口)	*<3>*
+	Class<?> cl = getProxyClass0(loader, intfs);
+
+	/*
+	 * Invoke its constructor with the designated invocation handler.
+	 */
+	try {
+		if (sm != null) {
+			checkNewProxyPermission(Reflection.getCallerClass(), cl);
+		}
+
+		final Constructor<?> cons = cl.getConstructor(constructorParams);
+		final InvocationHandler ih = h;
+		if (!Modifier.isPublic(cl.getModifiers())) {
+			AccessController.doPrivileged(new PrivilegedAction<Void>() {
+				public Void run() {
+					cons.setAccessible(true);
+					return null;
+				}
+			});
+		}
+		return cons.newInstance(new Object[]{h});
+	} catch (IllegalAccessException|InstantiationException e) {
+		throw new InternalError(e.toString(), e);
+	} catch (InvocationTargetException e) {
+		Throwable t = e.getCause();
+		if (t instanceof RuntimeException) {
+			throw (RuntimeException) t;
+		} else {
+			throw new InternalError(t.toString(), t);
+		}
+	} catch (NoSuchMethodException e) {
+		throw new InternalError(e.toString(), e);
+	}
+}	
+```
+
+```java
+private static Class<?> getProxyClass0(ClassLoader loader,Class<?>... interfaces) {
+	//代理的接口数量不能超过65535个
+	if (interfaces.length > 65535) {
+		throw new IllegalArgumentException("interface limit exceeded");
+	}
+
+    //proxyClassCache是什么？？？proxyClassCache是容器，代码对象的缓存<类加载器，接口数组，前两项对应的字节码对象>
+    //private static final WeakCache<ClassLoader, Class<?>[], Class<?>> proxyClassCache = new WeakCache<>(new KeyFactory(), new ProxyClassFactory());
+	//JDK对代理进行了缓存，如果已经存在对应的代理类，则直接返回，否则才会创建代理  
+	//实际调用的是WeakCache类的get方法	*<4>*
+	return proxyClassCache.get(loader, interfaces);
+}
+```
+
+```java
+public V get(K key, P parameter) {
+    Objects.requireNonNull(parameter);
+    expungeStaleEntries();
+
+    //组合后转键 (类加载器，接口数组)
+    Object cacheKey = CacheKey.valueOf(key, refQueue);
+
+    //通过cacheKey建在map中获取valuesMap实例，valuesMap中存的又是map
+    ConcurrentMap<Object, Supplier<V>> valuesMap = map.get(cacheKey);
+
+    //键为空，为空就自己创建一个存入
+    if (valuesMap == null) {
+        ConcurrentMap<Object, Supplier<V>> oldValuesMap
+            = map.putIfAbsent(cacheKey,valuesMap = new ConcurrentHashMap<>());
+        if (oldValuesMap != null) {
+            valuesMap = oldValuesMap;
+        }
+    }
+
+    //apply	*<5>*
+    //传键+参数 ****
+    Object subKey = Objects.requireNonNull(subKeyFactory.apply(key, parameter));
+    //根据键找有没有对应的接口
+    Supplier<V> supplier = valuesMap.get(subKey);
+    Factory factory = null;
+
+    while (true) {//找所有的接口
+        if (supplier != null) {
+            // supplier might be a Factory or a CacheValue<V> instance
+            V value = supplier.get();//取值
+            if (value != null) {
+                return value;//取到值就返回
+            }
+        }
+        //没有value继续往后走
+
+        if (factory == null) {//判断有无工厂
+            //创建对象的工厂
+            factory = new Factory(key, parameter, subKey, valuesMap);
+        }
+
+        if (supplier == null) {
+            supplier = valuesMap.putIfAbsent(subKey, factory);
+            if (supplier == null) {
+                // successfully installed Factory
+                supplier = factory;
+            }
+            // else retry with winning supplier
+        } else {
+            if (valuesMap.replace(subKey, supplier, factory)) {
+                // successfully replaced
+                // cleared CacheEntry / unsuccessful Factory
+                // with our Factory
+                supplier = factory;
+            } else {
+                // retry with current supplier
+                supplier = valuesMap.get(subKey);
+            }
+        }
+    }
+}
+```
+
+```java
+private static final class ProxyClassFactory implements BiFunction<ClassLoader, Class<?>[], Class<?>>{
+    // prefix for all proxy class names
+    private static final String proxyClassNamePrefix = "$Proxy";
+
+    // next number to use for generation of unique proxy class names
+    private static final AtomicLong nextUniqueNumber = new AtomicLong();
+
+    //生成Proxy0字节码(类加载器+接口)
+    @Override
+    public Class<?> apply(ClassLoader loader, Class<?>[] interfaces) {
+
+        //有几个接口就生成几个代理
+        Map<Class<?>, Boolean> interfaceSet = new IdentityHashMap<>(interfaces.length);
+
+        //循环每一个接口
+        for (Class<?> intf : interfaces) {
+            /*
+					 * Verify that the class loader resolves the name of this
+					 * interface to the same Class object.
+					 */
+            Class<?> interfaceClass = null;
+            try {
+                //取接口的反射字节码
+                interfaceClass  = Class.forName(intf.getName(), false, loader);
+            } catch (ClassNotFoundException e) {
+            }
+
+            if (interfaceClass != intf) {
+                throw new IllegalArgumentException(
+                    intf + " is not visible from class loader");
+            }
+            /*
+					 * Verify that the Class object actually represents an
+					 * interface.
+					 */
+            if (!interfaceClass.isInterface()) {
+                throw new IllegalArgumentException(
+                    interfaceClass.getName() + " is not an interface");
+            }
+            /*
+					 * Verify that this interface is not a duplicate.
+					 */
+            if (interfaceSet.put(interfaceClass, Boolean.TRUE) != null) {
+                throw new IllegalArgumentException(
+                    "repeated interface: " + interfaceClass.getName());
+            }
+
+
+            //----------------------以上是寻找接口，取接口中的东西(方法)
+
+        }
+
+        //代理的包($Proxy0存放在哪个包下)
+        String proxyPkg = null;     // package to define proxy class in
+        //public final
+        int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+
+        //循环每一个接口
+        for (Class<?> intf : interfaces) {
+            //获取接口修饰符
+            int flags = intf.getModifiers();
+            if (!Modifier.isPublic(flags)) {
+                accessFlags = Modifier.FINAL;
+                String name = intf.getName();
+                int n = name.lastIndexOf('.');
+                String pkg = ((n == -1) ? "" : name.substring(0, n + 1));
+                if (proxyPkg == null) {
+                    proxyPkg = pkg;
+                } else if (!pkg.equals(proxyPkg)) {
+                    throw new IllegalArgumentException(
+                        "non-public interfaces from different packages");
+                }
+            }
+        }
+        //------------------拼接包名
+
+        //如果没有公共代理的包，则使用默认包名com.sun.proxy
+        if (proxyPkg == null) {
+            // if no non-public proxy interfaces, use com.sun.proxy package
+            proxyPkg = ReflectUtil.PROXY_PACKAGE + ".";
+        }
+
+        //getAndIncrement()：从0开始，每次加1(先获取，再加1)
+        long num = nextUniqueNumber.getAndIncrement();
+        //生成代理类名
+        String proxyName = proxyPkg + proxyClassNamePrefix + num;
+
+        //generateProxyClass生成代理对象(类名，接口，访问权限) ，返回字节码(将来需要写到本地，所以返回字节码)
+        //generateProxyClass ****
+        byte[] proxyClassFile = ProxyGenerator.generateProxyClass(proxyName, interfaces, accessFlags);
+
+        try {
+            //包装成字节码对象 - 本地方法
+            return defineClass0(loader, proxyName,proxyClassFile, 0, proxyClassFile.length);
+        } catch (ClassFormatError e) {
+            /*
+					 * A ClassFormatError here means that (barring bugs in the
+					 * proxy class generation code) there was some other
+					 * invalid aspect of the arguments supplied to the proxy
+					 * class creation (such as virtual machine limitations
+					 * exceeded).
+					 */
+            throw new IllegalArgumentException(e.toString());
+        }
+    }
+}
+```
+
+
+
+```java
+
+```
+
+
+
+```java
+
+-----------------------------------------------------------------------------------
+
+    -----------------------------------------------------------------------------------
+
+    -----------------------------------------------------------------------------------
+
+    -----------------------------------------------------------------------------------
+
+    -----------------------------------------------------------------------------------
+    
+-----------------------------------------------------------------------------------
+    //(类名，接口，访问权限(public,final...))
+    public static byte[] generateProxyClass(final String var0, Class<?>[] var1, int var2) {
+    ProxyGenerator var3 = new ProxyGenerator(var0, var1, var2);
+
+    //生成字节码文件  ****
+    final byte[] var4 = var3.generateClassFile();
+
+    //字节码已经生成，问是否保存  System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+    //saveGeneratedFiles****
+    if (saveGeneratedFiles) {
+        //安全状态下开始存盘，AccessController权限验证，安全机制
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            public Void run() {
+                try {
+                    //截取.的索引
+                    int var1 = var0.lastIndexOf(46);
+                    Path var2;
+                    if (var1 > 0) {
+                        //找路径
+                        Path var3 = Paths.get(var0.substring(0, var1).replace('.', File.separatorChar));
+                        //创建目录
+                        Files.createDirectories(var3);
+                        //解析  ****  有兴趣可以看解析字节码
+                        var2 = var3.resolve(var0.substring(var1 + 1, var0.length()) + ".class");
+                    } else {
+                        //直接解析
+                        var2 = Paths.get(var0 + ".class");
+                    }
+
+                    Files.write(var2, var4, new OpenOption[0]);
+                    return null;
+                } catch (IOException var4x) {
+                    throw new InternalError("I/O exception saving generated file: " + var4x);
+                }
+            }
+        });
+    }
+
+    return var4;//返回字节码
+}
+-----------------------------------------------------------------------------------
+    //GetBooleanAction ***
+    boolean saveGeneratedFiles = (Boolean)AccessController.doPrivileged(new GetBooleanAction("sun.misc.ProxyGenerator.saveGeneratedFiles"));
+-----------------------------------------------------------------------------------
+    public GetBooleanAction(String var1) {
+    this.theProp = var1;
+}
+public Boolean run() {
+    //getBoolean ***
+    return Boolean.getBoolean(this.theProp);
+}
+-----------------------------------------------------------------------------------
+    public static boolean getBoolean(String name) {
+    boolean result = false;
+    try {
+        //通过name获取系统属性
+        result = parseBoolean(System.getProperty(name));
+    } catch (IllegalArgumentException | NullPointerException e) {
+    }
+    return result;
+}
+-----------------------------------------------------------------------------------
+    private byte[] generateClassFile() {
+    //任何一个类都有此三方法
+    this.addProxyMethod(hashCodeMethod, Object.class);
+    this.addProxyMethod(equalsMethod, Object.class);
+    this.addProxyMethod(toStringMethod, Object.class);
+    //var1所有接口
+    Class[] var1 = this.interfaces;
+    //var2接口数量
+    int var2 = var1.length;
+
+    int var3;
+    Class var4;
+    for(var3 = 0; var3 < var2; ++var3) {
+        //var4接口名
+        var4 = var1[var3];
+        //var5接口中所有方法
+        Method[] var5 = var4.getMethods();
+        //var6方法数量
+        int var6 = var5.length;
+
+        for(int var7 = 0; var7 < var6; ++var7) {
+            //var8方法名
+            Method var8 = var5[var7];
+            this.addProxyMethod(var8, var4);
+        }
+    }
+
+    //取出所有方法到迭代器
+    Iterator var11 = this.proxyMethods.values().iterator();
+
+    List var12;
+    //一个个取出方法
+    while(var11.hasNext()) {
+        var12 = (List)var11.next();
+        //检查返回值类型
+        checkReturnTypes(var12);
+    }
+
+    Iterator var15;
+    try {
+        //产生当前对象的构造方法
+        this.methods.add(this.generateConstructor());
+        var11 = this.proxyMethods.values().iterator();
+
+        while(var11.hasNext()) {
+            var12 = (List)var11.next();
+            var15 = var12.iterator();
+
+            while(var15.hasNext()) {
+                //创建代理方法
+                ProxyGenerator.ProxyMethod var16 = (ProxyGenerator.ProxyMethod)var15.next();
+                //配置属性
+                this.fields.add(new ProxyGenerator.FieldInfo(var16.methodFieldName, "Ljava/lang/reflect/Method;", 10));
+                this.methods.add(var16.generateMethod());
+            }
+        }
+        //静态方法
+        this.methods.add(this.generateStaticInitializer());
+    } catch (IOException var10) {
+        throw new InternalError("unexpected I/O Exception", var10);
+    }
+
+    //限定数量 
+    if (this.methods.size() > 65535) {
+        throw new IllegalArgumentException("method limit exceeded");
+    } else if (this.fields.size() > 65535) {
+        throw new IllegalArgumentException("field limit exceeded");
+    } else {
+        //拼接&Proxy0
+        this.cp.getClass(dotToSlash(this.className));
+        this.cp.getClass("java/lang/reflect/Proxy");
+        var1 = this.interfaces;
+        var2 = var1.length;
+
+        for(var3 = 0; var3 < var2; ++var3) {
+            var4 = var1[var3];
+            this.cp.getClass(dotToSlash(var4.getName()));
+        }
+
+        //将当前类设置成只读
+        this.cp.setReadOnly();
+        ByteArrayOutputStream var13 = new ByteArrayOutputStream();
+        DataOutputStream var14 = new DataOutputStream(var13);
+
+        try {
+            //顺序输出流
+            var14.writeInt(-889275714);//不是数字，前面定义了大量常量
+            var14.writeShort(0);
+            var14.writeShort(49);//49是两个值相加的结果
+            this.cp.write(var14);
+            var14.writeShort(this.accessFlags);//访问权限
+            var14.writeShort(this.cp.getClass(dotToSlash(this.className)));//类名
+            var14.writeShort(this.cp.getClass("java/lang/reflect/Proxy"));
+            var14.writeShort(this.interfaces.length);//接口
+            Class[] var17 = this.interfaces;
+            int var18 = var17.length;
+
+            //循环接口
+            for(int var19 = 0; var19 < var18; ++var19) {
+                Class var22 = var17[var19];
+                var14.writeShort(this.cp.getClass(dotToSlash(var22.getName())));
+            }
+
+            var14.writeShort(this.fields.size());
+            var15 = this.fields.iterator();
+
+            //循环属性
+            while(var15.hasNext()) {
+                ProxyGenerator.FieldInfo var20 = (ProxyGenerator.FieldInfo)var15.next();
+                var20.write(var14);
+            }
+
+            var14.writeShort(this.methods.size());
+            var15 = this.methods.iterator();
+
+            //循环方法
+            while(var15.hasNext()) {
+                ProxyGenerator.MethodInfo var21 = (ProxyGenerator.MethodInfo)var15.next();
+                var21.write(var14);
+            }
+
+            var14.writeShort(0);
+            //以字节数字形式返回
+            return var13.toByteArray();
+        } catch (IOException var9) {
+            throw new InternalError("unexpected I/O Exception", var9);
+        }
+    }
+}
+
+```
+
+
+
+```java
+//sayHello调用的是$proxy0中的sayHello
+public final void sayHello(String var1) throws  {
+	try {
+		//super.h指的是什么？？？super去父类Proxy中查看
+		super.h.invoke(this, m3, new Object[]{var1});
+		//super.h=InvocationHandler对象,自动调用invoke方法
+		//this:$proxy0代理对象
+		//m3($proxy0全局变量):Class.forName("com.yc.jdkproxy.Hello").getMethod("sayHello", Class.forName("java.lang.String"));
+		//new Object[]{var1}:实参，当成Object数组
+	} catch (RuntimeException | Error var3) {
+		throw var3;
+	} catch (Throwable var4) {
+		throw new UndeclaredThrowableException(var4);
 	}
 }
 ```
 
 ```java
-//启动类
-public class AnnotationStart {
-	public static void main(String[] args) {
-		//ApplicationContext含多个接口，每个接口实现不同功能--->单一职责原则
-		//AnnotationConfigApplicationContext作为入口
-		ApplicationContext ac = new AnnotationConfigApplicationContext(Appconfig.class);
-
-		String[] beanNames = ac.getBeanDefinitionNames();
-		for (String beanName : beanNames) {
-			System.out.println(beanName);
-		}
-	}
+public $Proxy0(InvocationHandler var1) throws  {
+    super(var1);//调用父类有参构造  *<2>*
 }
 ```
 
-#### 5.3.启动过程分析
+```java
+protected Proxy(InvocationHandler h) {
+    Objects.requireNonNull(h);
+    this.h = h;//h是传入的InvocationHandler对象
+}
+```
 
-①点击`AnnotationConfigApplicationContext`，进入
+## 七、JDBC
+
+### 1.基本操作
+
+①导包
+
+```java
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-jdbc</artifactId>
+	<version>5.3.15</version>
+	<!--默认作用域 compile-->
+</dependency>
+```
+
+②连接数据库
+
+```java
+@Configuration
+@ComponentScan
+public class AppConfig {
+    public static void main(String[] args) throws SQLException {
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+       
+        DataSource ds = (DataSource) ac.getBean("dataSource");
+        Connection con = ds.getConnection();
+        System.out.println(con);
+    }
+    
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        dataSource.setUrl("jdbc:oracle:thin:@//localhost:1521/orcl");
+        dataSource.setUsername("scott");
+        dataSource.setPassword("a");
+        return dataSource;
+    }
+}
+```
+
+③注入`jdbcTemplate`
+
+```java
+public JdbcTemplate jdbcTemplate;
+@Autowired
+public void init(DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+}
+```
+
+④增
+
+```java
+@Override
+public void addOpRecord(OpRecord opRecord) {
+    this.jdbcTemplate.update("insert into oprecord values(seq_oprecord.nextval,?,?,sysdate)", opRecord.getAccountid(), opRecord.getOpmoney());
+}
+----------------------------------------------
+@Override
+public Integer addAccount(double money) {
+    String sql = "insert into account values (seq_account.nextval, ?)";
+
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbcTemplate.update(con -> {
+        PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"accountid"});
+        pstmt.setObject(1, String.valueOf(money));
+        return pstmt;
+    }, keyHolder);
+    return keyHolder.getKey().intValue();
+}
+```
+
+⑤删
+
+```java
+this.jdbcTemplate.update( "delete from t_actor where id = ?",actorId);
+```
+
+⑥改
+
+```java
+@Override
+public int updateAccount(Account account) {
+    int result = jdbcTemplate.update("update account set balance=balance+? where accountid=?", account.getBalance(), account.getAccountid());
+    return result;
+}
+```
+
+⑦查
+
+```java
+1.查寻出一条结果，并将结果保存到表对应类中
+	@Override
+	public Account findAccount(Integer accountid) {
+	    Account account = this.jdbcTemplate.queryForObject("select * from account where accountid=" + accountid, (rs, rowNum) -> {
+	        Account newAccount = new Account();
+	        newAccount.setAccountid(rs.getInt(1));
+	        newAccount.setBalance(rs.getDouble(2));
+	        return newAccount;
+	    });
+	    return (Account) account;
+	}
+------------------------------------------------
+2.查寻出多条结果，并将结果保存到表对应类中
+	public List<OpRecord> findOpRecord(Integer accountid) {
+	   List<OpRecord> list = this.jdbcTemplate.query("select * from oprecord where accountid=" + accountid, (rs, rowNum) -> {
+	       //将查询返回的结果设置到OpRecord类中
+	       OpRecord opRecord = new OpRecord();
+	       opRecord.setId(rs.getInt(1));
+	       opRecord.setAccountid(rs.getInt(2));
+	       opRecord.setOpmoney(rs.getDouble(3));
+	       opRecord.setOptime(rs.getString(4));
+	       return opRecord;
+	   });
+	   return list;
+	}
+```
+
+### 2.事务操作
+
+①导包
+
+```java
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-tx</artifactId>
+</dependency>
+```
+
+②托管DataSourceTransactionManager，有数据源才有事务管理器
+
+```java
+@Bean//不同DataSource有不同事务管理器
+public DataSourceTransactionManager jdbcTransactionManager(DataSource dataSource) {
+   DataSourceTransactionManager jdbcTransactionManager = new DataSourceTransactionManager(dataSource);
+   return jdbcTransactionManager;
+}
+```
+
+③在需要事务管理的类或方法加事务管理注解
+
+```java
+@Transactional(transactionManager = "jdbcTransactionManager")//事务管理器
+//参数看源码可知，此处提出传播机制、隔离级别、超时时间、允许回滚的异常比较重要，其中隔离级别通过修改数据库的会话隔离级别实现——参数请看面试补充部分
+```
+
+④配置类加注解
+
+```java
+@EnableTransactionManagement//事务管理器
+```
+
+### 3.补充数据库事务
+
+#### 3.1.特性ACID
+
+* **原子性**：事务是统一整体，同时成功或同时失败
+  * DB内操作`rollback+savepoint+commit`
+  * Java操作`connection.setAutoCommit()`、`connection.commit()`、`connection.rollback()`
+
+* **一致性**：事务执行完毕后，所有数据的状态是一致的
+* **隔离性**：事物之间是互不干扰、相互隔离的
+* **持久性**：事务一旦提交，对数据库的改变是持久的
+
+#### 3.2.事务问题
+
+* **脏读**：某事务读到另一事务未提交的事务
+* **幻读**：同一事务进行两次查询操作，第二次查到第一次未出现的，即更新操作
+* **不可重复读**：同一事务对同一数据重复读两次，两次的结果不同，即修改操作
+* **丢失更新**：两个事务同时更新同一数据，先提交或撤销的事务被后提交或撤销的事务覆盖
+
+#### 3.3.事务隔离级别
+
+* **读未提交**：一个事务可以访问其他事务未提交的插入数据，一个事务可以访问其他事务未提交的更新数据，但一旦事务开始写则不允许其他事务同时开始写，但可以读，防止丢失更新
+* **读已提交**：一个事务可以访问其他事务已提交的插入数据，一个事务可以访问其他事务已提交的更新数据，但未提交的写事务会禁止其他事务，防止脏读
+* **可重复读**：一个事务可以访问其他事务已提交的插入数据，但一个事务不可以访问其他事务未提交的更新数据，读取数据的事务会禁止写事务，但写事务会禁止其他所有事务，防止脏读和不可重复读
+* **可串行化**：事务序列化执行，事务只能一个接着一个的执行，不能并发，防止幻读和不可重复读
+
+### 4.@Transactional参数
+
+#### 4.1.传播机制
+
+传播机制用于解决业务层方法之间互相调用的事务问题，当事务方法被另一个事务方法调用时，必须指定事务应该如何传播，例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行
+
+- **TransactionDefinition.PROPAGATION_REQUIRED**：默认传播机制，如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务
+- **TransactionDefinition.PROPAGATION_REQUIRES_NEW**：创建一个新的事务，如果当前存在事务，则把当前事务挂起，即不管外部方法是否开启事务，`Propagation.REQUIRES_NEW`修饰的内部方法会新开启自己的事务，且开启的事务相互独立，互不干扰
+- **TransactionDefinition.PROPAGATION_NESTED**：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于`TransactionDefinition.PROPAGATION_REQUIRED`
+- **TransactionDefinition.PROPAGATION_MANDATORY**：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常
+
+- **TransactionDefinition.PROPAGATION_SUPPORTS**：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行
+- **TransactionDefinition.PROPAGATION_NOT_SUPPORTED**：以非事务方式运行，如果当前存在事务，则把当前事务挂起
+- **TransactionDefinition.PROPAGATION_NEVER**：以非事务方式运行，如果当前存在事务，则抛出异常。
+
+#### 4.2.隔离级别
+
+- **TransactionDefinition.ISOLATION_DEFAULT**：默认隔离级别，MySQL默认采用的`REPEATABLE_READ`隔离级别Oracle默认采用的 `READ_COMMITTED` 隔离级别
+- **TransactionDefinition.ISOLATION_READ_UNCOMMITTED**：最低的隔离级别，使用这个隔离级别很少，因为它允许读取尚未提交的数据变更，**可能会导致脏读、幻读或不可重复读**
+- **TransactionDefinition.ISOLATION_READ_COMMITTED**：允许读取并发事务已经提交的数据，**可以阻止脏读，但是幻读或不可重复读仍有可能发生**
+- **TransactionDefinition.ISOLATION_REPEATABLE_READ**：对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，**可以阻止脏读和不可重复读，但幻读仍有可能发生**
+- **TransactionDefinition.ISOLATION_SERIALIZABLE**：最高的隔离级别，完全服从ACID的隔离级别，所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，**该级别可以防止脏读、不可重复读以及幻读**，但是这将严重影响程序的性能，通常情况下也不会用到该级别
+
+#### 4.3.rollbackFor
+
+类中抛出参数中设置的异常就会回滚，数据库里面的数据也会回滚，默认遇到`RuntimeException`时才会回滚，加上`rollbackFor=Exception.class`可以让事务在遇到非运行时异常时也回滚
+
+## 八、面试题补充
+
+### 1.Spring 框架中用到了哪些设计模式？
+
+- **工厂设计模式** : Spring使用工厂模式通过`BeanFactory`、`ApplicationContext`创建Bean对象
+- **代理设计模式** : Spring AOP功能的实现
+- **单例设计模式** : Spring 中的Bean默认都是单例的
+- **模板方法模式** : Spring中`jdbcTemplate`以Template结尾的对数据库操作的类使用到了模板模式
+- **包装器设计模式** : 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
+- **观察者模式:** Spring事件驱动模型就是观察者模式很经典的一个应用
+- **适配器模式** : Spring AOP的增强或通知(Advice)使用到了适配器模式
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

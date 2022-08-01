@@ -99,35 +99,15 @@ HTTP报文是HTTP协议在客户端和服务端之间传送的**数据块**，**
 |        Date         |          响应网站的日期和时间          |        Date: Tue, 11 Jul 2000 18:23:51GMT         |
 |        ETag         |             资源实体的标识             |     ETag: "306073f04224cbd114f14693c272f6a0"      |
 
+## 六、协议案例
 
+### 1.需求
 
+从`https://pm.myapp.com/invc/xfspeed/qqpcmgr/download/QQPCDownload1530.exe`下载指定文件，获取文件大小，并在本地用户目录下创建相同大小的空文件，以时间作为文件名，后缀名就为原来下载的文件的后缀名
 
+### 2.代码
 
-
-
-
-
-https://blog.csdn.net/weixin_43296313/article/details/122946471
-
-
-
-
-
-
-
-```
-下载指定文件，获取文件大小，并在本地创建相同大小的空文件
-
-下载地址：https://pm.myapp.com/invc/xfspeed/qqpcmgr/download/QQPCDownload1530.exe
-文件名：时间
-后缀名：原文件的后缀名
-目录：用户目录
-
-```
-
-
-
-```
+```java
 public class t1_DownLoadPrepare {
     public static void main(String[] args) throws Exception {
         String url = "https://pm.myapp.com/invc/xfspeed/qqpcmgr/download/QQPCDownload1530.exe";

@@ -20,7 +20,7 @@ Nginx安装简单，配置简洁；占内存小，并发量大(5W)；宕机概�
 
 ![1658021888800](assets/1658021888800.png)
 
-四、Nginx的Master-Worker模式
+## 四、Nginx的Master-Worker模式
 
 **Nginx可以在服务器不关闭的情况下刷新配置**，那如何实现呢？可以通过Zookeeper的监听机制，但是这样的话，每次使用Nginx都还好带一台Zookeeper服务器，不好，Nginx如何做？使用**Master-Worker主从架构**
 
