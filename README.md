@@ -8,7 +8,7 @@
 
 ## 💡技能树
 
-[Java基础](/2.Java基础/README)	|	[JavaWeb网络编程](/6.JavaWeb网络编程/README)	|	[JUC并发编程](7.JUC并发编程/README)	|	[Spring全家桶](/8.Spring全家桶/README)	|	[Zookeeper](/11.Zookeeper/README)	|	[Redis](/12.Redis/README)	|	[Nginx](/13.Nginx/README)	|	[Hadoop](14.Hadoop/README)	|	[JVM](/16.JVM/README)	|	[分布式锁](/其他/分布式锁)
+[Java基础](/2.Java基础/README)	|	[DB基础](/3.DB数据库/DB基础)	|	[JavaWeb网络编程](/6.JavaWeb网络编程/README)	|	[JUC并发编程](7.JUC并发编程/README)	|	[Spring全家桶](/8.Spring全家桶/README)	|	[Zookeeper](/11.Zookeeper/README)	|	[Redis](/12.Redis/README)	|	[Nginx](/13.Nginx/README)	|	[Hadoop](14.Hadoop/README)	|	[JVM](/16.JVM/README)	|	[分布式锁](/其他/分布式锁)
 
 ****
 
