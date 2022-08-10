@@ -12,7 +12,7 @@
 
 ****
 
-[IDEA指南](/其他/IDEA指南)	|	[Maven指南](/其他/Maven指南)
+[IDEA指南](/其他/IDEA指南)	|	[Maven指南](/其他/Maven指南)	|	[Git指南](/其他/Git指南)
 
 
 
