@@ -192,6 +192,10 @@ HTML是不严格的语言，不区分大小写；不需要编译，通过浏览�
 
 ## 八、表格
 
+### 1.表格
+
+`table`中使用`tr`表示表格中的一行，在`tr`中使用`td`表示一个单元格，`rowspan`表示纵向的合并单元格，`colspan`横向的合并单元格
+
 ```html
 <table border="1">：表格  border：有表格线
 	<tr>：行
@@ -203,6 +207,186 @@ HTML是不严格的语言，不区分大小写；不需要编译，通过浏览�
 	</tr>
 </table>
 ```
+
+### 2.长表格
+
+可以将一个表格分成三个部分，即头部`thead`、主体`tbody`、底部`tfoot`，`th`表示头部的单元格
+
+```html
+<table>
+    <thead>
+        <tr>
+            <td>日期</td>
+            <td>收入</td>
+            <td>支出</td>
+            <td>合计</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>合计</td>
+            <td>1200</td>
+        </tr>
+    </tfoot>
+</table>
+```
+
+### 3.表格的样式
+
+```html
+<table>
+    <tr>
+        <td>学号</td>
+        <td>姓名</td>
+        <td>性别</td>
+        <td>年龄</td>
+        <td>地址</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>孙悟空</td>
+        <td>男</td>
+        <td>18</td>
+        <td>花果山</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>猪八戒</td>
+        <td>男</td>
+        <td>28</td>
+        <td>高老庄</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>沙和尚</td>
+        <td>男</td>
+        <td>38</td>
+        <td>流沙河</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>唐僧</td>
+        <td>男</td>
+        <td>16</td>
+        <td>女儿国</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>孙悟空</td>
+        <td>男</td>
+        <td>18</td>
+        <td>花果山</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>猪八戒</td>
+        <td>男</td>
+        <td>28</td>
+        <td>高老庄</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>沙和尚</td>
+        <td>男</td>
+        <td>38</td>
+        <td>流沙河</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>唐僧</td>
+        <td>男</td>
+        <td>16</td>
+        <td>女儿国</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>唐僧</td>
+        <td>男</td>
+        <td>16</td>
+        <td>女儿国</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>孙悟空</td>
+        <td>男</td>
+        <td>18</td>
+        <td>花果山</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>猪八戒</td>
+        <td>男</td>
+        <td>28</td>
+        <td>高老庄</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>沙和尚</td>
+        <td>男</td>
+        <td>38</td>
+        <td>流沙河</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>唐僧</td>
+        <td>男</td>
+        <td>16</td>
+        <td>女儿国</td>
+    </tr>
+</table>
+```
+
+```css
+table {
+    width: 50%;
+    margin: 0 auto;
+    border: 1px black solid;
+
+    /* border-spacing：指定边框之间的距离；边框之间虽然没有距离了，但是实际上是两条边框的和，看起来是变粗了 */
+    /* border-spacing: 0; */
+
+    /*border-collapse:collapse；设置边框的合并；真正的将两条边框合并成一条边框 */
+    border-collapse: collapse;
+    
+    /* 默认情况下元素在td中是垂直居中的，可以通过vectical-align来修改 */
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* 如果表格中没有使用tbody而是直接使用tr，那么浏览器会自动创建一个tbody，并且将tr全都放到tbody中
+   所以说，tr不是table的子元素 */
+tbody tr:nth-child(odd) {
+    background-color: rgb(211, 216, 188);
+}
+
+td {
+    border: 1px black solid;
+}
+```
+
+![image-20210613195306119](assets/81543159dc1d6a8beed1305693d638f6.png)
 
 ## 九、超链接
 
@@ -416,10 +600,10 @@ IE8下不支持`audio`元素，但是可以使用`<embed>`元素在文档中的�
 
 ## 十三、表单
 
-与后端控制层相关，表示一个整体，一个页面可含多个表单
+表单用于将本地的数据提交给远程的服务器，与后端控制层相关，表示一个整体，一个页面可含多个表单
 
 ```html
-<form action="跳转到后端控制层的地址" method="get默认，post...">
+<form action="表单要提交的服务器的地址" method="get默认，post...">
 
 	<label for="input的名字，用来表示这个label是那个input的"></label> for：
 
