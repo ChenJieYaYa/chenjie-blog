@@ -1,5 +1,9 @@
 # DB基础
 
+> 前言：是不是觉得啃官方文档很难受？但其实官网文档才是最最精华的资料！平时开发过程中记得查询官方
+>
+> * [MySQL 5.7参考文档](https://dev.mysql.com/doc/refman/5.7/en/preface.html)
+
 ## 一、SQL语句
 
 ### 1.DDL数据定义语言

@@ -10,7 +10,11 @@
 
 ## 一、Java基础
 
+<<<<<<< HEAD
 [Java入门](/2.Java基础/Java入门)	|	[Java语法](/2.Java基础/Java语法)
+=======
+[Java入门](/2.Java基础/Java入门)	|	[Java基础](/2.Java基础/Java基础)
+>>>>>>> 2dd870e1271654983723d79aaf5f4f6e3ff4ae49
 
 [Java基础面试题](/2.Java基础/Java基础面试题)
 
