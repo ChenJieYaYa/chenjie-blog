@@ -10,6 +10,8 @@
 
 ## 一、Java基础
 
+[Java入门](/2.Java基础/Java入门)	|	[Java语法](/2.Java基础/Java语法)
+
 [Java基础面试题](/2.Java基础/Java基础面试题)
 
 ## 二、数据库
