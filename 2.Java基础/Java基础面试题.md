@@ -1,18 +1,3 @@
-## 6.标识符和关键字的区别？
-
-**标识符**简单来说就是一个名字，由`大小写字母，数字字符，$，_`组成，**关键字**则是被赋予特殊含义的标识符，Java内的关键字如下，其`true`、`false`、`null`是字面值，不是关键字，但同时不可作为标识符
-
-|         分类         |                            关键字                            |
-| :------------------: | :----------------------------------------------------------: |
-|       访问控制       |                  private、protected、public                  |
-| 类，方法和变量修饰符 | abstract、class、extends、final、implements、interface、native、new、static、strictfp、synchronized、transient、volatile、enum |
-|       程序控制       | break、continue、return、do、while、if、else、for、instanceof、switch、case、default、assert |
-|       错误处理       |              try、catch、throw、throws、finally              |
-|        包相关        |                       import、package                        |
-|       基本类型       |     boolean、byte、char、double、float、int、long、short     |
-|       变量引用       |                      super、this、void                       |
-|        保留字        |                         goto、const                          |
-
 ## 7.成员变量与局部变量的区别？
 
 ## 8.成员变量与静态变量的区别？
