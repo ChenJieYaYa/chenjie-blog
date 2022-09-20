@@ -38,10 +38,6 @@ Java API指的就是JDK中提供的各种Java类，这样的Java类太多，具�
 
   ![1663591938363](assets/1663591938363.png)
 
-为了更加深入的了解字符串常量池，请看下图情况
-
-![1663592255826](assets/1663592255826.png)
-
 #### 1.3.比较方法
 
 之前学习过`==`运算符，那么`==`比较的到底是什么内容呢？其实是分情况的
@@ -115,7 +111,7 @@ Java API指的就是JDK中提供的各种Java类，这样的Java类太多，具�
 
 > 线程安全指同一时间只能被一个客户端操作，数据安全；线程不安全指的是同时被多个客户端操作，数据不安全
 
-**字符串拼接符`+`底层使用的是`StringBuilder`的`append`，每次拼接都会创建`StringBuilder`对象**
+**字符串拼接符`+`底层使用的是`StringBuilder`的`append`，每次拼接都会创建`StringBuilder`对象，在6.1中详细讲解**
 
 #### 2.2.创建StringBuilder对象
 
@@ -144,8 +140,12 @@ Java API指的就是JDK中提供的各种Java类，这样的Java类太多，具�
 通过`new`的方式，存在三种`StringBuffer`构造函数
 
 * `public StringBuffer()`
+
 * `public StringBuffer(String str)`
+
 * `public StringBuffer(int capacity)`：指定容量的字符串缓冲区对象
+
+  > 容量指的是最多能放多少，长度指的是实际放了多少
 
 #### 3.3.常见方法
 
@@ -204,6 +204,159 @@ Java API指的就是JDK中提供的各种Java类，这样的Java类太多，具�
 |        `int length()`        |           返回长度           |
 |     `String toString()`      | 将`StringJoiner`转为`String` |
 
+### 6.底层原理
+
+#### 6.1.字符串拼接的底层原理
+
+字符串拼接分成两种情况，请看
+
+①无变量参与的情况
+
+![1663677712243](assets/1663677712243.png)
+
+②有变量参与的情况
+
+* 在JDK8以前，包含变量参与的字符串拼接实际会创建`StringBuilder`对象，调用其`append()`
+
+  ![1663678224705](assets/1663678224705.png)
+
+  ![1663678348185](assets/1663678348185.png)
+
+* JDK8会预估字符串长度，形成数组后再转成字符串，解决每拼接一次就需要创建两个对象的问题，但是若存在多次拼接(上图)最好还是不要使用`+`，因为存在多次预估，使用`append()`更加高效
+
+  ![1663678874857](assets/1663678874857.png)
+
+了解了字符串的拼接原理，请看以下面试题
+
+![1663679471241](assets/1663679471241.png)
+
+![1663679521515](assets/1663679521515.png)
+
+#### 6.2.StringBuilder高效底层原理
+
+`StringBuilder`是一个长度可变的容器，所有的内容都往里面塞，不会创建很多无用的空间，节约内存
+
+#### 6.3.StringBuilder源码分析
+
+先了解其扩容原理
+
+![1663680479948](assets/1663680479948.png)
+
+来开始啃源码！
+
+①创建默认容量为16的字符数组
+
+```java
+//按住Ctrl，鼠标点击StringBuilder
+StringBuilder sb = new StringBuilder();
+```
+
+```java
+public StringBuilder() {
+    //super	*<1>*
+    super(16);
+}
+```
+
+```java
+char[] value;
+AbstractStringBuilder(int capacity) {
+    //创建默认容量为16的字符数组
+    value = new char[capacity];
+}
+```
+
+②扩容部分主要就是在`append()`内体现，所以进入`append()`，`Ctrl+F12`选中`append(String)`
+
+```java
+@Override
+public StringBuilder append(String str) {
+    //append	*<1>*
+    super.append(str);
+    return this;
+}
+```
+
+```java
+int count;//实际长度
+public AbstractStringBuilder append(String str) {
+    if (str == null)//做非空判断
+        //appendNull	*<2>*
+        return appendNull();//拼接null返回当前对象
+    
+    int len = str.length();//字符串实际长度
+    //ensureCapacityInternal(实际长度0 + 字符串长度 = 最小容量)	*<3>*
+    ensureCapacityInternal(count + len);
+    str.getChars(0, len, value, count);
+    count += len;//实际长度
+    return this;
+}
+```
+
+```java
+private AbstractStringBuilder appendNull() {
+    int c = count;//实际长度，此处为默认值0
+    ensureCapacityInternal(c + 4);//该方法暂时先不看
+    final char[] value = this.value;//数字是对象，此处改变局部value，导致全局this.value也会变化
+    value[c++] = 'n';
+    value[c++] = 'u';
+    value[c++] = 'l';
+    value[c++] = 'l';
+    count = c;//改变实际长度为null的长度4
+    return this;//返回当前对象
+}
+//appendNull()完毕，请回到<2>继续向下
+```
+
+```java
+private void ensureCapacityInternal(int minimumCapacity) {
+    //判断需要的最小容量 > 实际容量[数组的长度]，表示需要扩容
+    if (minimumCapacity - value.length > 0)
+        //expandCapacity	*<4>*
+        expandCapacity(minimumCapacity);//value扩容完毕
+}
+//ensureCapacityInternal()完毕，请回到<3>继续向下
+```
+
+```java
+//此方法是扩容的关键逻辑
+void expandCapacity(int minimumCapacity) {
+    //新容量 = 原容量*2+2
+    int newCapacity = value.length * 2 + 2;
+    //若新容量 < 需要的最小容量，则直接按照需要的最小容量扩容
+    if (newCapacity - minimumCapacity < 0)
+        newCapacity = minimumCapacity;//新容量 = 需要的最小容量
+    //若新容量<0，表示扩容以后的容量超出int范围，则直接将新容量设置为Integer.MAX_VALUE;
+    if (newCapacity < 0) {
+        //若所需的容量<0，表示所需的容量超出int范围，则抛出异常，因为无法再扩容了
+        if (minimumCapacity < 0)
+            throw new OutOfMemoryError();
+        newCapacity = Integer.MAX_VALUE;
+    }
+    //确定好需要扩展的新容量则需要开始扩容了，走copyOf(原数组,新容量)	*<5>*
+    value = Arrays.copyOf(value, newCapacity);//扩容后的新数组复制给value
+}
+//expandCapacity()完毕，请回到<4>继续向下
+```
+
+```java
+public static char[] copyOf(char[] original, int newLength) {
+    //创建新容量大小的数组
+    char[] copy = new char[newLength];
+    //调用System的arraycopy(原数组,起始位置,目标数组,起始位置,复制长度)
+    System.arraycopy(original, 0, copy, 0,
+                     Math.min(original.length, newLength));
+    //返回扩容后的新数组
+    return copy;
+}
+//copyOf()完毕，请回到<5>继续向下
+```
+
+
+
+
+
+JDK8新特性
 
 
 
@@ -224,13 +377,6 @@ Java API指的就是JDK中提供的各种Java类，这样的Java类太多，具�
 
 
 
-
-
-
-
-
-
-![1663595939587](assets/1663595939587.png)
 
 ![1663595929848](assets/1663595929848.png)
 
