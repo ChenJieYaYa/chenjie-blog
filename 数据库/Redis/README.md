@@ -1,4 +1,4 @@
-# 🚥 Redis系列
+# 🚥 Redis
 
 ### [Redis概述](/12.Redis/Redis概述)	|	[Redis常见命令](/12.Redis/Redis常见命令)
 

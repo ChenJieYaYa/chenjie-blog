@@ -1,4 +1,4 @@
-# 🚥 Nginx系列
+# 🚥 Nginx
 
 ### [Nginx概述](/13.Nginx/Nginx概述)	|	[Nginx配置](/13.Nginx/Nginx配置)
 
