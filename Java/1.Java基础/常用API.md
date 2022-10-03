@@ -159,7 +159,7 @@ public int compareTo(String anotherString) {
 
 #### 3.1.特点
 
-`StringBuffer `相当于容器，与`StringBuilder`类似，创建后**内容是可变的**，`StringBuilder`继承`AbstractStringBuilder`，底层同样使用字符数组保存字符串，但未使用`private final`修饰，底层方法加同步锁，**线程安全**
+`StringBuffer`相当于容器，与`StringBuilder`类似，创建后**内容是可变的**，`StringBuilder`继承`AbstractStringBuilder`，底层同样使用字符数组保存字符串，但未使用`private final`修饰，底层方法加同步锁，**线程安全**
 
 #### 3.2.创建StringBuffer对象
 
