@@ -14,7 +14,7 @@
 
 ### 二、数据库
 
-[DB基础](/数据库/DB基础)	|	[Redis](/数据库/Redis/README)
+[MySQL](/数据库/MySQL/README)	|	[Redis](/数据库/Redis/README)
 
 ### 三、前端
 
