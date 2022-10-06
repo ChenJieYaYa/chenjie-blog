@@ -46,7 +46,7 @@ Spring框架一般指的都是SpringFramework，SpringFramework是很多模块�
 
 **Spring**包含很多模块，最重要的是SpringCore，它提供IOC的支持
 
-**Spring MVC**主要用于快速构建MVC框架的Web应用，核心思想是将业务逻辑、数据、显示部分分开阻止代码
+**Spring MVC**主要用于快速构建MVC框架的Web应用，核心思想是将业务逻辑、数据、显示部分分开组成代码
 
 **Spring Boot**旨在简化Spring的配置，不与要XML或Java显示配置，真正做到开箱即用！
 
@@ -175,7 +175,7 @@ public class HelloTest {
 
 ### 1.什么是IOC/DI？
 
-IOC全称Inversion Of Control，译为控制反转，**思想是将原本在程序中手动创建对象的控制权交给Spring框架**，手动创建对象的控制权即控制，交给外部框架即反转，**IOC容器实际上就是`Map<key,value>`**，Map中存放的是各种对象
+IOC全称Inversion Of Control，译为控制反转，**思想是将原本在程序中手动创建对象的控制权交给Spring框架**，手动创建对象的控制权即控制，交给外部框架即反转，**IOC容器实际上就是`Map<key,value>`👀**，Map中存放的是各种对象
 
 DI全称Dependency Injection，译为依赖注入，**思想是对象所有属性由Spring注入**，说白了就是`set()`由Spring容器执行
 

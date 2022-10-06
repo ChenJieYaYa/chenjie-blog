@@ -21,7 +21,7 @@ HTTP报文是HTTP协议在客户端和服务端之间传送的**数据块**，**
 
 ### 2.HTTP报文分类
 
-请求报文：`Client->Server`，由请求行、头域、实体组成，**请求头由请求方法、URI、协议版本组成**，例`GET http://www.baidu.com/index.html HTTP/1.0`
+请求报文：`Client->Server`，由请求头、头域、实体组成，**请求头由请求方法、URI、协议版本组成**，例`GET http://www.baidu.com/index.html HTTP/1.0`
 
 响应报文：`Server->Client`，由响应头、头域、实体组成，**响应头由协议版本、状态码、描述信息组成**
 
