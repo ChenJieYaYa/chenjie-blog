@@ -8,19 +8,21 @@
 
 # 💡技能树
 
-[Java基础](/Java/1.Java基础/README)	|	[网络编程](/Java/2.网络编程/README)	|	[并发编程](/Java/3.JUC并发编程/README)	|	[Spring](/Java/4.Spring全家桶/README)	|	[Nginx](/Java/5.Nginx/README)	|	[JVM](/Java/6.JVM/README)
+[Java基础](/Java基础/README)		[MySQL](/MySQL/README)		[网络编程](/网络编程/README)		[并发编程](/JUC并发编程/README)
 
-[MySQL](/数据库/MySQL/README)	|	[Redis](/数据库/Redis/README)
+[前端](/前端/前端概述)		[HTML](/前端/HTML)		[CSS](/前端/CSS)		[HTML+CSS之禅意花园练习](/前端/HTML+CSS禅意花园练习)		[JS](/前端/JS)
 
-[前端概述](/前端/前端概述)	|	[HTML](/前端/HTML)	|	[CSS](/前端/CSS)	|	[HTML+CSS禅意花园练习](/前端/HTML+CSS禅意花园练习)	|	[JS](/前端/JS)
+[SpringFramework](/Spring/SpringFramework)		[SpringBoot](/Spring/SpringBoot)		[SpringCloud](/Spring/SpringCloud/README)
 
-[Zookeeper](/大数据/1.Zookeeper/README)	|	[Hadoop](/大数据/2.Hadoop/README)	|	[Flume](/大数据/3.Flume/Flume)	|	[Sqoop](/大数据/4.Sqoop/Sqoop)	|	[Azkaban](/大数据/5.Azkaban/Azkaban)
+[Nginx](/Nginx/README)		[Redis](/Redis/README)		[Zookeeper](/Zookeeper/README)
 
-[分布式锁](/其他/分布式锁)
+[Hadoop](/Hadoop/README)		[Flume](/Flume/Flume)		[Sqoop](/Sqoop/Sqoop)		[Azkaban](Azkaban/Azkaban)
+
+[分布式锁](/其他/分布式锁)		[JVM](/JVM/README)
 
 # 🧤操作指南
 
-[IDEA指南](/其他/IDEA指南)	|	[Maven指南](/其他/Maven指南)	|	[Git指南](/其他/Git指南)
+[IDEA指南](/其他/IDEA指南)		[Maven指南](/其他/Maven指南)		[Git指南](/其他/Git指南)
 
 
 

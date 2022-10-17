@@ -43,6 +43,10 @@ Sink是**完全事务性**的，在从Channel批量获取事物之前，每个Si
 
 Sink组件目的地包括**hdfs**、**logger**、**avro**、thrift、ipc、**file**、null、HBase、solr、自定义，其中**Avro Sink是扇出流(1对多)扇入流(多对1)的基础，实现多个Flume的连接**
 
+#### 3.4.小结
+
+Flume采集的数据会丢失吗？答案是数据不会丢失，因为Channel可以存于磁盘，并且Sink是完全事务性的！
+
 ### 4.流程图解
 
 ![1665306345142](assets\1665306345142.png)
@@ -64,7 +68,7 @@ Channel选择器有两种类型
 
 ![1665389831339](assets\1665389831339.png)
 
-### 3. Flume Agent聚合
+### 3.Flume Agent聚合
 
 ![1665389872857](assets\1665389872857.png)
 

@@ -2,6 +2,8 @@
 
 ## 一、Sqoop概述
 
+**Sqoop用于在Hadoop与传统数据库之间传递数据**，可将传统数据库的数据导入HDFS，反过来也可将HDFS的数据导入传统数据库
+
 ## 二、Sqoop安装
 
 ### 1.下载解压重命名
@@ -475,6 +477,18 @@ insert into project( name,type,description,create_at,status) values( 'project18'
 ⑤查看执行结果
 
 ![1665466490287](assets\1665466490287.png)
+
+### 5.小结
+
+Sqoop底层运行的任务是什么？Sqoop中只有Map阶段，无Reduce，且默认4个MapTask
+
+Sqoop在导入数据时发生数据倾斜怎么避免？首先`num-mappers`用于设置MapTask的数量，默认4个；其次`split-by`用于限定MapTask中分配的切片依据哪个列
+
+
+
+
+
+
 
 
 
