@@ -2,7 +2,7 @@
 
 ## 一、什么是Stream？
 
-`Stream`指将待处理的元素集合看成流，流在管道中传输，可以在管道节点上借助`Stream API`对流中的元素进行操作，比如筛选、排序、聚合等
+`Stream`将待处理的元素集合看成流，流在管道中传输，可以在管道节点上借助`Stream API`对流中的元素进行操作，比如筛选、排序、聚合等
 
 ## 二、对流的操作
 
@@ -11,7 +11,7 @@
 * **中间操作**：中间操作都返回流对象本身，可以含多个中间操作
 * **终端操作**：每个流只能由一个终端操作，终端操作结束以后流也无法使用，理解`Stream`为**一次性流**
 
-另外，`Stream`有几个特性
+另外`Stream`有以下几个特性需要知道
 
 * `Stream`不会存储元素，按特定的规则对数据进行计算
 * `Stream`不改变数据源，通常产生新的集合或值
@@ -19,53 +19,103 @@
 
 ## 三、方法引用::
 
-**相当于创建Class类的实例对象class，通过实例对象class调用对应方法**
+### 1.方法引用是什么？
 
-* 构造器方法引用：Class::new(调用默认构造器)
-* 类静态方法引用：Class::static_method
-* 类普通方法引用：Class::method
-* 实例方法引用：Instance::method
+方法引用可拆解为方法和引用，即将已经写好的方法拿过来用，当成函数式接口抽象方法的方法体，注意方法引用使用时必须满足以下条件
 
-## 四、函数式接口
+* 被引用处必须是[函数式接口](/Java基础/lambda表达式)，函数式接口指含`@FunctionalInterface`注解且只有一个抽象方法的接口
+* 被引用的方法必须是已经存在的
 
-函数式接口含两个条件，即**含`@FunctionalInterface`注解和只有一个抽象方法**，不包括与Object方法重名的方法
+* 被引用的方法的形参和返回值需要和抽象方法保持一致
+
+### 2.方法引用的理解
+
+我们首先从传统的写法步步引入，这样便于我们理解
+
+①传统写法
 
 ```java
-@FunctionalInterface//函数式接口注解，表示支持函数式操作
-interface Action<T> {
-    void execute(T t);//有且仅有的抽象方法
+Arrays.sort(arr, new Comparator<Integer>(){
+    @Override
+    public int compare(Integer o1,Integer o2){
+        return o2-o1;
+    }
+})
+```
+
+②lambda表达式简化
+
+```java
+Arrays.sort(arr, (Integer o1,Integer o2) => {
+	return o2-o1;
+})
+```
+
+③lambda表达式再次简化
+
+```java
+Arrays.sort(arr, (o1, o2) => o2-o1)
+```
+
+④方法引用简化
+
+```java
+//首先需要判断它是否满足使用方法引用的条件，Comparator是函数式接口，此时我们只需要创建形参和返回值与抽象方法一致的被引用方法即可
+public static int subtraction(int num1,int num2){
+    return num2-num1;
 }
+
+//方法引用化简后如下，假设subtraction静态方法所在的类为Test
+Arrays.sort(arr, Test::subtraction)
 ```
 
-函数式接口的使用方法如下
+### 3.方法引用的使用
 
-* 作为函数式接口中抽象方法的execute的实现
+①引用静态方法的格式为`类名::静态方法`，例如`Integer::parseInt`
 
-```java
-Action action = System.out::println;
-action.execute("hello");
-```
+②引用成员方法又分为三种情况
 
-* 回调方式
+* 引用其他类成员方法的格式为`其他类对象::方法名`
+* 引用本类成员方法的格式为`this::方法名`，注意该方法不能是静态方法
+* 引用父类成员方法的格式为`super::方法名`，注意该方法不能是静态方法
 
-```java
-static void test(Action action, String str) {
-    action.execute(str);
-}
-test(System.out::println, "hello");
-```
+③引用构造方法的格式为`类名::new`，用于创建对象
 
-* **新无参无返回值方法替换函数式接口的唯一抽象函数**，与唯一抽象函数同型都可以这样做
+④除了以上三种基本使用方式外，还存在其他调用方式
 
-```java
-public void sleepMethod(){
-	System.out.println("hello");
-}
-//相当于sleepMethod替代run
-new Thread(ClassName::sleepMethod).start();
-```
+* 通过类名引用成员方法的格式为`类名::成员方法`，这种方式存在独有的规则
 
-## 五、谓词Predicate
+  * 被引用处必须是函数式接口
+
+  * 被引用的方法必须是已经存在的
+
+  * **被引用的方法的形参与抽象方法的第二个形参到最后一个形参保持一致，返回值保持一致**，这句话如何理解呢？请向下看
+
+    ```java
+    //请看如下流语句
+    list.stream().map(String::toUpperCase).forEach(s -> System.out.println(s));
+    
+    //查看流中map方法的参数
+    list.stream().map(new Function<String, String>() {
+        @Override
+        public String apply(String s){
+            return s.toUpperCase();
+        }
+    }).forEach(s->System.out.println(s));
+    
+    //查看toUpperCase的源码
+    public String toUpperCase() {
+        return toUpperCase(Locale.getDefault());
+    }
+    
+    //我们观察到map()参数函数式接口中的轴向方法和被引用方法的参数不同，那么为什么还可以引用？这便是我要讲解的新规则
+    //Stream中抽象方法的第一个参数一般都表示流中间的每一个数据，决定可以引用哪些类的方法，如apply的参数s就表示流中的每一个数据
+    //第二个参数到最后一个与被引用的参数保持一致，若没有第二个参数则说明被引用的方法是无参成员方法
+    ```
+
+* 引用数组的构造方法的格式为`数据类型[]::new`
+
+## 四、谓词Predicate
 
 谓词Predicate可将函数作为参数传递
 
@@ -121,17 +171,17 @@ public class TestPredicate {
 }
 ```
 
-## 六、Optional
+## 五、Optional
 
 Optional是一个可以为`null`的容器对象，**表示值存在或不存在，解决NullPointerException异常**，常用方法如下
 
-* `isPresent()`：值存在返回`true`，不存在返回`false`
-* `get()`：返回当前值，若值不存在会抛出异常
-* `orElse(T)`：值存在时返回该值，否则返回T的值
+- `isPresent()`：值存在返回`true`，不存在返回`false`
+- `get()`：返回当前值，若值不存在会抛出异常
+- `orElse(T)`：值存在时返回该值，否则返回T的值
 
-Optional类还有三个特化版本OptionalInt、OptionalLong、OptionalDouble，在后面的数值流中的`max()`返回的类型便是这个
+Optional类还有三个特化版本OptionalInt、OptionalLong、OptionalDouble，数值流中的`max()`返回的类型便是这个
 
-## 七、Stream操作
+## 六、Stream操作
 
 ### 1.创建流
 
@@ -375,7 +425,7 @@ list.stream()
 
 ### 11.去重distinct
 
-* `Stream<T> distinct()`：返回去重后的流
+* `Stream<T> distinct()`：返回去重后的流，去重依赖于`hashCode()`和`equals()`记得重写
 
 ```java
 list.stream()
@@ -422,13 +472,15 @@ Stream.concat(s1,s2)//合并s1与s2
 
 `collect()`是终端方法，主要依赖`java.util.stream.Collectors`类内置的静态方法
 
-#### 15.1.归集toList&toMap&toSet
+#### 15.1.归集toList&toSet&toMap
 
 ```java
 List<Integer> list = Arrays.asList(1, 6, 3, 4, 6, 7, 9, 6, 20);
 List<Integer> listNew = list.stream()
     						.filter(x -> x % 2 == 0)
     						.collect(Collectors.toList());
+
+//注意保证值得唯一性
 Set<Integer> set = list.stream()
     						.filter(x -> x % 2 == 0)
     						.collect(Collectors.toSet());
@@ -439,6 +491,7 @@ personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
 personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
 personList.add(new Person("Anni", 8200, 24, "female", "New York"));
 
+//注意保证键得唯一性
 Map<?, Person> map = personList.stream()
     						.filter(p -> p.getSalary() > 8000)
     						.collect(Collectors.toMap(Person::getName, p -> p));
@@ -509,9 +562,15 @@ Map<String, List<Record>> map = list.stream()
     //groupingBy(分组属性),返回Map<分组属性类型,List<流中数据类型>>
 ```
 
-
-
 > [就是说方法也太多了😥剩下的方法请移步吧](https://blog.csdn.net/TonyStarkF/article/details/122882539)
+
+
+
+
+
+
+
+
 
 
 
