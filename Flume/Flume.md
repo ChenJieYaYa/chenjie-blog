@@ -82,7 +82,7 @@ Channel选择器有两种类型
 
 官网地址：[https://flume.apache.org/download.html](https://flume.apache.org/download.html)
 
-​	![1665390156163](assets\1665390156163.png)
+![1665390156163](assets\1665390156163.png)
 
 ![1665390175116](assets\1665390175116.png)
 

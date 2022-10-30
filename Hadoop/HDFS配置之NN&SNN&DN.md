@@ -483,7 +483,7 @@ node2: starting secondarynamenode, logging to /usr/local/hadoop271/logs/hadoop-r
 
 启动成功后，查看进程
 
-### ![1665242112492](assets/1665242112492.png)
+![1665242112492](assets/1665242112492.png)
 
 ### 11.最后测试是否配置完毕
 

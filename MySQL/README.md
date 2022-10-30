@@ -4,5 +4,13 @@
 
 
 
+------
+
+
+
+### [Linux安装MySQL5](/MySQL/Linux安装MySQL5)	|	[Linux安装MySQL8](/MySQL/Linux安装MySQL8)
+
+
+
 
 

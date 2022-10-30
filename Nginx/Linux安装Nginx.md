@@ -42,7 +42,7 @@ yum install -y openssl openssl-devel
 
 下载地址：[http://nginx.org/en/download.html](http://nginx.org/en/download.html)
 
-![1658039109452](assets/1658039109452.png)
+![1667105467023](assets/1667105467023.png)
 
 ### 2.上传
 
