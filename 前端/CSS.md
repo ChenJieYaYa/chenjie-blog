@@ -2057,13 +2057,19 @@ background-image: repeating-radial-gradient(circle at 50px 100px, red 50px, yell
 
 ![image-20210612221604176](assets/9c41690bc864e959e50ebc0fd5fdf36c.png)
 
-
-
 > 浏览器一般会存在默认样式，这样的话会对CSS中自定义样式存在一定的影响，清除标签的默认样式放于clearall.css文档中
 
 
 
 > 更多的可参考[过渡与动画](https://blog.csdn.net/qq_35925558/article/details/118162428)、[平移、旋转与缩放](https://blog.csdn.net/qq_35925558/article/details/118253369)、[菜鸟教程](https://www.runoob.com/css/css-tutorial.html)
+
+
+
+> 小练习[HTML+CSS之禅意花园效果模仿](/前端/HTML+CSS禅意花园练习)
+
+
+
+
 
 
 

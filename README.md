@@ -16,7 +16,7 @@
 
 [Hadoop](/Hadoop/README)	|	[Flume](/Flume/Flume)	|	[Sqoop](/Sqoop/Sqoop)	|	[Azkaban](Azkaban/Azkaban)
 
-[UI](/前端/前端概述)	|	[HTML](/前端/HTML)	|	[CSS](/前端/CSS)	|	[HTML+CSS之禅意花园](/前端/HTML+CSS禅意花园练习)	|	[JS](/前端/JS)
+[UI](/前端/前端概述)	|	[HTML](/前端/HTML)	|	[CSS](/前端/CSS)	|	[JS](/前端/JS)	|	[Svg](https://www.runoob.com/svg/svg-tutorial.html)
 
 [IDEA](/IDEA/IDEA)	|	[Maven](/Maven/Maven)	|	[Git](/Git/Git)	|	[Linux](/Linux/README)	|	[Docker](/Docker/README)
 
