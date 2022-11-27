@@ -165,7 +165,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 </ol>
 ```
 
-![1669036984388](../%E5%89%8D%E7%AB%AF/assets/1669036984388.png)
+![1669036984388](/assets/1669036984388.png)
 
 ### 2.无序元素Unordered
 
@@ -188,7 +188,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 </ul>
 ```
 
-![image-20210515213301387](../%E5%89%8D%E7%AB%AF/assets/1e16701ac02ef44c0dca2129a0eaa417.png)
+![image-20210515213301387](/assets/1e16701ac02ef44c0dca2129a0eaa417.png)
 
 ### 3.定义列表
 
@@ -207,7 +207,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 </dl>
 ```
 
-![image-20210515212936773](../%E5%89%8D%E7%AB%AF/assets/80de044f3bf4c7b61a381ff842cd2645.png)
+![image-20210515212936773](/assets/80de044f3bf4c7b61a381ff842cd2645.png)
 
 ## 七、超链接
 
@@ -259,7 +259,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 </ul>
 ```
 
-![动画2021-5-15](../%E5%89%8D%E7%AB%AF/assets/b1b0efbb5dc40fdaca6e6ea45510846f.gif)
+![动画2021-5-15](/assets/b1b0efbb5dc40fdaca6e6ea45510846f.gif)
 
 ### 4.内部地址
 
@@ -275,7 +275,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 <a href="../test4/test4.html">超链接4</a>
 ```
 
-![动画2021-5-11](../%E5%89%8D%E7%AB%AF/assets/612bdcda740f7f6ffa49b1618c5bdfdc.gif)
+![动画2021-5-11](/assets/612bdcda740f7f6ffa49b1618c5bdfdc.gif)
 
 ### 5.新建页面
 
@@ -290,7 +290,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 <a href="./test1.html" target="_blank">超链接1——新建页面</a><br>
 ```
 
-![动画2021-5-10](../%E5%89%8D%E7%AB%AF/assets/4cac9b988ae5b78fd1db1ab1fea2078b.gif)
+![动画2021-5-10](/assets/4cac9b988ae5b78fd1db1ab1fea2078b.gif)
 
 ### 6.锚点跳转
 
@@ -364,7 +364,7 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 <a href="#">回到顶部</a>
 ```
 
-![动画2021-5-14](../%E5%89%8D%E7%AB%AF/assets/e522bb59afcc1c08e24081f0f8fe0304.gif)
+![动画2021-5-14](/assets/e522bb59afcc1c08e24081f0f8fe0304.gif)
 
 ## 八、文本格式
 
@@ -376,10 +376,11 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 
 ```html
 <blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote">
-    <cite>引文描述</cite>
     这是一段被引用的内容
 </blockquote>
 ```
+
+![1669546846324](assets/1669546846324.png)
 
 ②行内引用`<q>`
 
@@ -387,11 +388,15 @@ W3C又称万维网联盟，是国际中立性标准机构，W3C标准包括结�
 <q>这是一段被引用的内容</q>
 ```
 
+![1669546860050](assets/1669546860050.png)
+
 ### 2.引文
 
 ```html
 <cite>这是引文</cite>
 ```
+
+![1669546873483](assets/1669546873483.png)
 
 ### 3.缩略语
 
@@ -422,6 +427,8 @@ X<sup>2</sup>Y<sup>3</sup>
 X<sub>2</sub>Y<sub>3</sub>
 ```
 
+![1669547050992](assets/1669547050992.png)
+
 ### 6.计算机代码
 
 ①`<code>`用于标记计算机通用代码
@@ -433,7 +440,7 @@ X<sub>2</sub>Y<sub>3</sub>
     }</code>
 ```
 
-![1669132703465](assets/1669132703465.png)
+![1669547127703](assets/1669547127703.png)
 
 ②`<pre>`用于保留空白字符，即缩进或多余的空白
 
@@ -444,7 +451,7 @@ X<sub>2</sub>Y<sub>3</sub>
     }</pre>
 ```
 
-![1669132716162](assets/1669132716162.png)
+![1669547154089](assets/1669547154089.png)
 
 ③`<var>`用于标记具体变量名
 
@@ -452,7 +459,7 @@ X<sub>2</sub>Y<sub>3</sub>
 <code>const <var>para</var> = document.querySelector('p');</code>
 ```
 
-![1669132745554](assets/1669132745554.png)
+![1669547169775](assets/1669547169775.png)
 
 ④`<kbd>`用于标记输入电脑的键盘值
 
@@ -460,7 +467,7 @@ X<sub>2</sub>Y<sub>3</sub>
 复制快捷键<kbd>Ctrl+C</kbd>
 ```
 
-![1669132757374](assets/1669132757374.png)
+![1669547191551](assets/1669547191551.png)
 
 ⑤`<samp>`用于标记计算机程序的输出
 
@@ -469,11 +476,11 @@ X<sub>2</sub>Y<sub>3</sub>
     64 bytes from 63.245.215.20: icmp_seq=0 ttl=40 time=158.233 ms</samp>
 ```
 
-![1669132766536](assets/1669132766536.png)
+![1669547203981](assets/1669547203981.png)
 
 ### 7.标记时间和日期
 
-世界上有许多种书写日期的格式，不同的格式不容易被电脑识别，`<time>`元素允许附上清晰的、可被机器识别的时间/日期
+世界上有许多种书写日期的格式，不同的格式不容易被电脑识别，`<time>`元素允许**附上清晰的、可被机器识别的时间/日期**
 
 ```html
 <!-- 标准简单日期 -->
@@ -501,180 +508,638 @@ X<sub>2</sub>Y<sub>3</sub>
 <time datetime="2016-W04">The fourth week of 2016</time>
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 六、布局标签
-
-|    标签     |                        描述                        |
-| :---------: | :------------------------------------------------: |
-| `<header>`  |                  网页的头部，页眉                  |
-| `<footer>`  |                  网页的底部，页脚                  |
-|  `<main>`   |     网页的主体部分，一个页面中只会有一个`main`     |
-|   `<nav>`   |                    网页中的导航                    |
-|  `<aside>`  |             主体相关的其他内容，侧边栏             |
-| `<article>` |                     独立的文章                     |
-| `<section>` |   独立的区块，以上标签都无法表示时使用`section`    |
-|   `<div>`   |     块元素，没有任何的语义，就用来表示一个区块     |
-|  `<span>`   | 行内元素，没有任何的语义，一般用于在网页中选中文字 |
+## 九、布局标签
+
+|    标签    |                             描述                             |
+| :--------: | :----------------------------------------------------------: |
+| `<header>` |                       网页的头部，页眉                       |
+|  `<nav>`   |                         网页的导航栏                         |
+|  `<main>`  | 网页的主体部分，**一个页面中只会有一个`main`，且直接位于`<body>`下，最好不要将`<main>`嵌入其他元素中** |
+| `<aside>`  |               网页的侧边栏，常嵌套在`<main>`中               |
+| `<footer>` |                       网页的底部，页脚                       |
+
+其中主内容`<main>`中还可有各种子内容区段
+
+|    标签     |                            描述                             |
+| :---------: | :---------------------------------------------------------: |
+| `<article>` |                       包裹独立的文章                        |
+| `<section>` | 独立的区块，可按功能分块，以上标签都无法表示时使用`section` |
+|   `<div>`   |         块元素，没有任何的语义，就用来表示一个区块          |
+|  `<span>`   |     行内元素，没有任何的语义，一般用于在网页中选中文字      |
 
 ![HTML5 语义元素](assets/62350db5fc5eae4fd6366e0bbb2aa645.png)
 
+## 十、多媒体嵌入
 
+### 1.图片
 
-## 八、表格
+#### 1.1.图片标签
 
-### 1.表格
+`<img>`标签是**自结束标签**，这种元素属于**替换**元素，即它**无需包含文本内容和结束标签**，`<img>`包含的属性如下
 
-`table`中使用`tr`表示表格中的一行，在`tr`中使用`td`表示一个单元格，`rowspan`表示纵向的合并单元格，`colspan`横向的合并单元格
+|       属性        |                             描述                             |                    图解                    |
+| :---------------: | :----------------------------------------------------------: | :----------------------------------------: |
+|       `src`       |           指定外部图片的路径，类似于`<a>`的`href`            |                                            |
+|       `alt`       | 指当图片无法显示时的描述，**若该图片被嵌套于超链接中发生跳转动作，最好是加上图片描述，以便图片加载失败时还可以跳转** | ![1669547636853](assets/1669547636853.png) |
+| `width`、`height` | 分别指图片的宽高，**宽度和高度中如果只修改了一个则另一个会等比例缩放** |                                            |
+|      `title`      |                    鼠标移入图片的提示信息                    | ![1669547655735](assets/1669547655735.png) |
+
+> 图片路径一般不使用URL，而是将图片与HTML放在同一服务器下，**若使用URL则需要通过DNS重新寻找IP地址**
+
+图片的格式主要与如下几类，图片效果一样的则选文件小的，图片效果不一样的则选图片效果好的；**尽可能的兼顾和平衡图片效果和文件大小**
+
+|  图片类型   |                             说明                             |
+| :---------: | :----------------------------------------------------------: |
+| `jpeg(jpg)` |        支持的颜色比较丰富、不支持透明效果、不支持动图        |
+|    `gif`    |          支持的颜色比较单一、支持简单透明、支持动图          |
+|    `png`    |    支持的颜色丰富、支持复杂透明、不支持动图、专为网页而生    |
+|   `webp`    | 谷歌新推出的专门用来表示网页中的图片的一种格式，具备其他图片格式的所有优点，而且文件还特别的小，缺点是兼容性不好 |
+|  `base64`   | 图片使用`base64`编码，这样可以将图片转换为字符，通过字符的形式来引入图片 |
+
+注意**大多数图片是有版权的**，不要在你的网页上使用一张未授权的图片，就算授权也最好不要直接通过URL指向该图片，其一是因为需要重新DNS寻找IP，其二是因为该图片可能被原作者修改而导致自己的网站发生变化
+
+------
+
+若需要给图片一个标题怎么办？当然可以使用`<img>`和`<p>`标签配合，但二者在语义上是没有联系的，**H5提供`<figcaption>`和`<figure>`使标题和图片产生联系，`<figcaption>`内是`<figure>`内内容的文字描述**
 
 ```html
-<table border="1">：表格  border：有表格线
-	<tr>：行
-		<td bgcolor="单元格颜色 " rowspan="合并行的数量" colspan="合并列的数量"></td>：行内的列
-	</tr>
-
-	<tr>：行
-		<td></td>：行内的列
-	</tr>
-</table>
+<figure>
+    <img src="./img/title.png">
+    <figcaption>图片的标题</figcaption>
+</figure>
 ```
 
-### 2.长表格
+![1669547830393](assets/1669547830393.png)
 
-可以将一个表格分成三个部分，即头部`thead`、主体`tbody`、底部`tfoot`，`th`表示头部的单元格
+#### 1.2.背景图片
+
+背景图片不同于`<img>`，`<img>`属于HTML添加图片，而背景图片指通过CSS将图片嵌入网站，通过`background-image`实现
+
+```html
+<div class="bg-test" style="width: 300px;height: 300px;border: darkgray 1px solid"></div>
+
+<style>
+    .bg-test {
+        background-image: url("./img/title.png");
+    }
+</style>
+```
+
+![1669548021654](assets/1669548021654.png)
+
+### 2.视频&音频
+
+#### 2.1.视频
+
+`<video>`标签用来向页面中引入一个外部的视频文件，`src`属性用于指向外部文件，`controls`属性表示是否允许用户控制播放
+
+```html
+<video src="./img/2.mp4" controls></video>
+```
+
+但是视频存在许多格式，并不是所有格式都能被浏览器支持，可**通过`<source>`在`<video>`下指定不同格式的视频文件**，浏览器会选择与自身codec相匹配的媒体格式。`<source>`中的`type`属性建议设置，设置后浏览器通过检查该属性迅速判断并跳过不支持的格式，若未设置则浏览器会尝试加载每个文件，直到找到能正确播放的媒体文件为止
+
+```html
+<video controls>
+  <source src="./img/2.mp4" type="video/mp4">
+  <source src="./img/2.webm" type="video/webm">
+</video>
+```
+
+除了上述`src`和`controls`属性外，其他属性如下
+
+|       属性        |                             描述                             |
+| :---------------: | :----------------------------------------------------------: |
+| `width`、`height` |                           视频宽高                           |
+|    `autoplay`     |                           自动播放                           |
+|      `loop`       |                           循环播放                           |
+|      `muted`      |                         默认关闭声音                         |
+|     `poster`      | 视频封面URL，常用于广告，若设置`autoplay`则看不到`poster`效果 |
+|     `preload`     | 用于缓冲较大文件，`none`表示不缓冲，`auto`表示页面加载后缓存媒体文件，`metadata`表示仅缓冲文件的元数据 |
+
+#### 2.2.音频
+
+`<audio>`和`<video>`使用上只存在些许差别，例如`<audio>`不支持`width`、`height`和`poster`属性，不存在视觉效果
+
+```html
+<audio src="./img/1.mp3" controls></audio>
+
+<audio controls>
+    <source src="./img/1.mp3" type="audio/mp3">
+    <source src="./img/1.ogg" type="audio/ogg">
+</audio>
+```
+
+#### 2.3.重新播放媒体
+
+可以在Javascript中调用 `load()`方法来重置媒体
+
+```html
+<div>
+    <video id="load-test" src="./img/2.mp4" controls height="300px"></video>
+    <input type="button" value="重新播放" onclick="load_test()">
+</div>
+
+<script>
+    function load_test() {
+        const videoDom = document.getElementById('load-test');
+        videoDom.load();
+    }
+</script>
+```
+
+#### 2.4.音轨增删事件
+
+当音轨被添加或删除时可以通过监听相关事件来侦测到
+
+```html
+<script>
+    const videoDom = document.querySelector('video');
+    videoDom.audioTracks.onaddtrack = function(event) {
+		audioTrackAdded(event.track);
+    };
+</script>
+```
+
+#### 2.5.显示音轨文本
+
+某些人看不到听不懂视频和音频内容怎么办？`<track>`标签可以解决该问题
+
+**👀`<track>`标签让`.vtt`后缀文件与HTML媒体一起工作，使用`srclang`属性告知浏览器通过什么语言显示音轨文本，`kind`属性指定类型**，三种类型如下
+
+- `subtitles`：添加翻译字幕
+- `captions`：添加同步描述，帮助不能理解的人理解媒体内容
+- `timed descriptions`：文字转为音频
+
+典型的 WebVTT 文件如下
+
+```
+WEBVTT
+
+1
+00:00:22.230 --> 00:00:24.606
+第一段字幕
+
+2
+00:00:30.739 --> 00:00:34.074
+第二段
+
+  ...
+```
+
+`<track>`标签需放在`<audio>`或`<video>`标签当中，所有`<source>`标签之后使用
+
+```html
+<video controls>
+    <source src="example.mp4" type="video/mp4">
+    <source src="example.webm" type="video/webm">
+    <track kind="subtitles" src="subtitles_en.vtt" srclang="en">
+</video>
+```
+
+### 3.其他嵌入技术
+
+
+
+
+
+内联框架`iframe`，用于向当前页面中引入一个其他页面
+
+- `src`指定要引入的网页的路径
+- `frameborder`指定内联框架的边框
+
+```html
+<iframe src="https://www.qq.com" width="800" height="600" frameborder="0"></iframe>
+```
+
+![image-20210516001417802](assets/eb3a46bfa5df9d15306c7cc3b9cb81a8.png)
+
+
+
+
+
+
+
+### 4.矢量图
+
+#### 4.1.矢量图是什么？
+
+我们常见的`.png`、`.jpg`、`.bmp`和`.gif`格式的图都叫做位图，**位图文件使用像素网格定义**，当放大此类图片时图片的边缘可能会失真，即出现类似马赛克的感觉
+
+**矢量图使用算法定义**，矢量图文件中包含图形和路径的概念，电脑可根据这两个概念计算出该矢量图在屏幕中渲染时该呈现的样子， [SVG](https://developer.mozilla.org/zh-CN/docs/Glossary/SVG)是用于Web的矢量图形。与位图不同的是**矢量图即使放大也不会失真，且矢量图相较于位图拥有更小的体积，不会存储每个像素信息**
+
+![1669551122933](assets/1669551122933.png)
+
+#### 4.2.SVG是什么？
+
+SVG矢量图文件本质**由XML语言组成，标记图形，而不是内容**。可通过`<circle>`或`<rect>`等标签来定义SVG内的元素，简单实例如下，此处不详细讲解SVG的使用方法
+
+```html
+<!-- 圆 -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <!-- cx表示圆心的x坐标，cy表示圆心的y轴坐标 r表示半径 -->
+    <circle cx="50" cy="50" r="40" fill='red'/>
+</svg>
+
+<!-- 直线 -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2"/>
+</svg>
+```
+
+SVG通过手工编码很容易实现，大多数人使用[Inkscape](https://inkscape.org/en/)或[Illustrator](https://en.wikipedia.org/wiki/Adobe_Illustrator)等矢量图形编辑器编辑，SCG图像的每个标签可单独通过CSS或JS控制，这意味着通过CSS或JS可控制矢量图的部分元素，但SVG图容易变得复杂，导致浏览器处理SVG图的事件边长，且某些旧版本浏览器尚未支持SVG
+
+#### 4.3.SVG嵌入网页
+
+①直接复制SVG源码嵌入，但该方式容易导致代码过长，且该SVG无法复用难以维护
+
+```html
+<svg t="1669551977407" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+     p-id="5091" width="200" height="200">
+    <path d="M512 512m-320 0a320 320 0 1 0 640 0 320 320 0 1 0-640 0Z" fill="#1296db" p-id="5092"></path>
+</svg>
+```
+
+②`<img>`方式使SVG失去本身可编辑的特点，通过CSS设置背景方式也会使SVG失去本身可编辑的特点
+
+```html
+<img src="./img/svg.svg">
+```
+
+③`<iframe>`方式可设置iframe大小与图片大小一致，同时去除边框
+
+```html
+<iframe src="./img/svg.svg" width="200" height="200" style="border: none;"></iframe>
+```
+
+④`<object>`方式
+
+```html
+<object data="./img/svg.svg" type="image/svg+xml"></object>
+```
+
+⑤`<embed>`方式
+
+```html
+<embed src="./img/svg.svg" type="image/svg+xml">
+```
+
+### 5.响应式图片
+
+> 此处专注于`<img>`标签的响应式图片，实际上**CSS是比HTML更好的响应式设计工具**
+
+#### 5.1.srcset和sizes属性
+
+`srcset`定义允许浏览器选择的图像集，及每个图像集的大小，格式是`文件名 图像固有宽度(w)`
+
+`sizes`定义媒体条件并指定何种媒体条件下选择哪个图片尺寸，格式是`媒体条件 图像将填充的槽宽度`，槽宽度单位可以是`px`、`em`或`vw`，但不会是`%`
+
+`srcset`和`sizes`属性的逻辑执行过程如下
+
+* 浏览器查看设备宽度，并检查`sizes`列表中哪个媒体条件为真
+* 查看图像将填充的槽宽度，加载`srcset`列表中引用的最接近所选的槽大小的图像
+
+```html
+<img srcset="elva-fairy-320w.jpg 320w,
+             elva-fairy-480w.jpg 480w,
+             elva-fairy-800w.jpg 800w"
+     sizes="(max-width: 320px) 280px,
+            (max-width: 480px) 440px,
+            800px"
+     src="elva-fairy-800w.jpg" alt="Elva dressed as a fairy">
+
+<!--sizes最后一个槽宽度指当没有任何媒体条件为真时会选择它-->
+<!--若浏览器以视窗宽度为480来加载页面，那么(max-width: 480px)媒体条件为真，因此440px的槽会被选择，所以elva-fairy-480w.jpg将被加载-->
+```
+
+但这种方式的缺点是可能会造成空间上的浪费且老旧浏览器不支持
+
+#### 5.2.picture元素
+
+## 十一、表格
+
+### 1.基础表格
+
+`<table>`标签内`<tr>`表示表格中的行，`<tr>`内使用`<td>`表示单元格
 
 ```html
 <table>
+    <tr>
+        <td>[0,0]</td>
+        <td>[0,1]</td>
+        <td>[0,2]</td>
+    </tr>
+    <tr>
+        <td>[1,0]</td>
+        <td>[1,1]</td>
+        <td>[1,2]</td>
+    </tr>
+    <tr>
+        <td>[2,0]</td>
+        <td>[2,1]</td>
+        <td>[2,2]</td>
+    </tr>
+</table>
+```
+
+![1669557227038](assets/1669557227038.png)
+
+`<th>`的用法和`td`是相同的，只是`<th>`在视觉和语义上都表示表格的标题
+
+```html
+<table>
+    <tr>
+        <th>&nbsp;</th>
+        <th>列一</th>
+        <th>列二</th>
+        <th>列三</th>
+    </tr>
+    <tr>
+        <th>行一</th>
+        <td>[0,0]</td>
+        <td>[0,1]</td>
+        <td>[0,2]</td>
+    </tr>
+    <tr>
+        <th>行二</th>
+        <td>[1,0]</td>
+        <td>[1,1]</td>
+        <td>[1,2]</td>
+    </tr>
+    <tr>
+        <th>行三</th>
+        <td>[2,0]</td>
+        <td>[2,1]</td>
+        <td>[2,2]</td>
+    </tr>
+</table>
+```
+
+![1669557263763](assets/1669557263763.png)
+
+合并单元格常使用`rowspan`表示纵向合并单元格数，`colspan`表示横向合并单元格数，`border`为表格加上边框方便观察
+
+```html
+<table border="1">
+    <tr>
+        <th>&nbsp;</th>
+        <th>列一</th>
+        <th>列二</th>
+        <th>列三</th>
+    </tr>
+    <tr>
+        <th>行一</th>
+        <td colspan="2">[0,0]</td>
+        <td>[0,1]</td>
+    </tr>
+    <tr>
+        <th>行二</th>
+        <td rowspan="2">[1,0]</td>
+        <td>[1,1]</td>
+        <td>[1,2]</td>
+    </tr>
+    <tr>
+        <th>行三</th>
+        <td>[2,1]</td>
+        <td>[2,2]</td>
+    </tr>
+</table>
+```
+
+![1669557641427](assets/1669557641427.png)
+
+### 2.列样式
+
+`<colgroup>`和`<col>`可达到定义相同列样式的效果，`<colgroup>`被定义于`<table>`标签下，`<col>`按顺序表示每列，其中`span`属性表示列数量
+
+```html
+<table border="1">
+    <colgroup>
+        <col style="background-color: darkgray" span="2">
+        <col style="width: 100px">
+        <col style="background-color: plum">
+    </colgroup>
+    <tr>
+        <th>&nbsp;</th>
+        <th>列一</th>
+        <th>列二</th>
+        <th>列三</th>
+    </tr>
+    <tr>
+        <th>行一</th>
+        <td>[0,0]</td>
+        <td>[0,1]</td>
+        <td>[0,2]</td>
+    </tr>
+    <tr>
+        <th>行二</th>
+        <td>[1,0]</td>
+        <td>[1,1]</td>
+        <td>[1,2]</td>
+    </tr>
+    <tr>
+        <th>行三</th>
+        <td>[2,0]</td>
+        <td>[2,1]</td>
+        <td>[2,2]</td>
+    </tr>
+</table>
+```
+
+![1669558444233](assets/1669558444233.png)
+
+### 3.高级表格
+
+`<caption>`为表格添加标题
+
+```html
+<table border="1">
+    <caption>表格标题</caption>
+    <tr>
+        <td>[0,0]</td>
+        <td>[0,1]</td>
+        <td>[0,2]</td>
+    </tr>
+    <tr>
+        <td>[1,0]</td>
+        <td>[1,1]</td>
+        <td>[1,2]</td>
+    </tr>
+    <tr>
+        <td>[2,0]</td>
+        <td>[2,1]</td>
+        <td>[2,2]</td>
+    </tr>
+</table>
+```
+
+![1669558684208](assets/1669558684208.png)
+
+
+
+表结构复杂时可将表格分成三个部分，即头部`<thead>`常表示表格第一行、主体`<tbody>`常表示表格主体、底部`<tfoot>`常表示表格的最后一行
+
+```html
+<table border="1">
     <thead>
         <tr>
-            <td>日期</td>
-            <td>收入</td>
-            <td>支出</td>
-            <td>合计</td>
+            <th>&nbsp;</th>
+            <th>thead1</th>
+            <th>thead2</th>
+            <th>thead3</th>
+        </tr>
+    </thead>
+    <tfoot style="font-weight: bold;">
+        <tr>
+            <td colspan="4">合计</td>
+        </tr>
+    </tfoot>
+    <tbody style="font-style: italic;font-size: 90%;">
+        <tr>
+            <th>行一</th>
+            <td>[0,0]</td>
+            <td>[0,1]</td>
+            <td>[0,2]</td>
+        </tr>
+        <tr>
+            <th>行二</th>
+            <td>[1,0]</td>
+            <td>[1,1]</td>
+            <td>[1,2]</td>
+        </tr>
+        <tr>
+            <th>行三</th>
+            <td>[2,0]</td>
+            <td>[2,1]</td>
+            <td>[2,2]</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+![1669559447111](assets/1669559447111.png)
+
+### 4.scope属性
+
+```html
+<table border="1">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th colspan="3" scope="colgroup">列组标题1</th>
+            <th colspan="2" scope="colgroup">列组标题2</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th scope="col">1列一</th>
+            <th scope="col">1列二</th>
+            <th scope="col">1列三</th>
+            <th scope="col">2列一</th>
+            <th scope="col">3列二</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>2000.1.1</td>
-            <td>500</td>
-            <td>200</td>
-            <td>300</td>
+            <th rowspan="2" scope="rowgroup">行组标题1</th>
+            <th scope="row">1行一</th>
+            <td>一[0,0]</td>
+            <td>一[0,1]</td>
+            <td>一[0,2]</td>
+            <td>二[0,0]</td>
+            <td>二[0,1]</td>
         </tr>
         <tr>
-            <td>2000.1.1</td>
-            <td>500</td>
-            <td>200</td>
-            <td>300</td>
+            <th scope="row">1行二</th>
+            <td>一[1,0]</td>
+            <td>一[1,1]</td>
+            <td>一[1,2]</td>
+            <td>二[1,0]</td>
+            <td>二[1,1]</td>
         </tr>
         <tr>
-            <td>2000.1.1</td>
-            <td>500</td>
-            <td>200</td>
-            <td>300</td>
+            <th rowspan="2" scope="rowgroup">行组标题2</th>
+            <th scope="row">2行一</th>
+            <td>一[2,0]</td>
+            <td>一[2,1]</td>
+            <td>一[2,2]</td>
+            <td>二[2,0]</td>
+            <td>二[2,1]</td>
+        </tr>
+        <tr>
+            <th scope="row">2行二</th>
+            <td>一[3,0]</td>
+            <td>一[3,1]</td>
+            <td>一[3,2]</td>
+            <td>二[3,0]</td>
+            <td>二[3,1]</td>
         </tr>
     </tbody>
-    <tfoot>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>合计</td>
-            <td>1200</td>
-        </tr>
-    </tfoot>
 </table>
 ```
 
-### 3.表格的样式
+`scope`属性可通过`id`和`headers`代替实现
+
+```html
+<table border="1">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th colspan="3" id="colgroup1">列组标题1</th>
+            <th colspan="2" id="colgroup2">列组标题2</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th id="col11">1列一</th>
+            <th id="col12">1列二</th>
+            <th id="col13">1列三</th>
+            <th id="col21">2列一</th>
+            <th id="col22">3列二</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th rowspan="2" id="rowgroup1">行组标题1</th>
+            <th id="row11">1行一</th>
+            <td headers="colgroup1 col11 row11">一[0,0]</td>
+            <td headers="colgroup1 col12 row11">一[0,1]</td>
+            <td headers="colgroup1 col13 row11">一[0,2]</td>
+            <td headers="colgroup2 col21 row11">二[0,0]</td>
+            <td headers="colgroup2 col22 row11">二[0,1]</td>
+        </tr>
+        <tr>
+            <th id="row12">1行一</th>
+            <td headers="colgroup1 col11 row12">一[1,0]</td>
+            <td headers="colgroup1 col12 row12">一[1,1]</td>
+            <td headers="colgroup1 col13 row12">一[1,2]</td>
+            <td headers="colgroup2 col21 row12">二[1,0]</td>
+            <td headers="colgroup2 col22 row12">二[1,1]</td>
+        </tr>
+        <tr>
+            <th rowspan="2" id="rowgroup2">行组标题2</th>
+            <th id="row21">2行一</th>
+            <td headers="colgroup1 col11 row21">一[2,0]</td>
+            <td headers="colgroup1 col12 row21">一[2,1]</td>
+            <td headers="colgroup1 col13 row21">一[2,2]</td>
+            <td headers="colgroup2 col21 row21">二[2,0]</td>
+            <td headers="colgroup2 col22 row21">二[2,1]</td>
+        </tr>
+        <tr>
+            <th id="row22">2行一</th>
+            <td headers="colgroup1 col11 row22">一[3,0]</td>
+            <td headers="colgroup1 col12 row22">一[3,1]</td>
+            <td headers="colgroup1 col13 row22">一[3,2]</td>
+            <td headers="colgroup2 col21 row22">二[3,0]</td>
+            <td headers="colgroup2 col22 row22">二[3,1]</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+### 5.表格样式示例
 
 ```html
 <table>
@@ -809,137 +1274,54 @@ td {
 
 ![image-20210613195306119](assets/81543159dc1d6a8beed1305693d638f6.png)
 
-## 十、图片
-
-`img`标签是一个自结束标签，这种元素属于替换元素，即块和行内元素之间，具有两种元素的特点，属性主要有`src`属性指定的是外部图片的路径、`alt`图片的描述、`width`图片的宽度、`height`图片的高度(宽度和高度中如果只修改了一个则另一个会等比例缩放)
-
-```html
-<img src="图片路径" width="宽度" height="高度" />
-```
-
-> 图片的格式主要与如下几类
->
-> * `jpeg(jpg)`：支持的颜色比较丰富、不支持透明效果、不支持动图、一般用来显示照片
-> * `gif`：支持的颜色比较单一、支持简单透明、支持动图
-> * `png`：支持的颜色丰富、支持复杂透明、不支持动图、专为网页而生
-> * `webp`：谷歌新推出的专门用来表示网页中的图片的一种格式，具备其他图片格式的所有优点，而且文件还特别的小，缺点是兼容性不好
-> * `base64`：图片使用`base64`编码，这样可以将图片转换为字符，通过字符的形式来引入图片
->
-> 图片效果一样的，选文件小的；图片效果不一样的，选图片效果好的；**尽可能的兼顾和平衡图片效果和文件大小**
-
-## 十一、内联格式
-
-内联框架`iframe`，用于向当前页面中引入一个其他页面
-
-- `src`指定要引入的网页的路径
-- `frameborder`指定内联框架的边框
-
-```html
-<iframe src="https://www.qq.com" width="800" height="600" frameborder="0"></iframe>
-```
-
-![image-20210516001417802](assets/eb3a46bfa5df9d15306c7cc3b9cb81a8.png)
-
-## 十二、音视频
-
-### 1.音频
-
-`audio`标签用来向页面中引入一个外部的音频文件，音视频文件引入时，默认情况下不允许用户自己控制播放停止
-
-* `controls`是否允许用户控制播放
-* `autoplay`音频文件是否自动播放，如果设置了`autoplay`，则音乐在打开页面时会自动播放，但是目前来讲大部分浏览器都不会自动对音乐进行播放
-* `loop`音乐是否循环播放
-
-```html
-<audio src="./source/audio.mp3" controls autoplay loop></audio>
-```
-
-![image-20210516002915651](assets/9ef64b24a0e8cd8e43ebd8b261919ca6.png)
-
-除了通过`src`属性来指定外部文件的路径以外，还可以通过`<source>`元素来指定文件的路径
-
-```html
-<audio controls autoplay loop>
-    对不起，您的浏览器不支持播放音频！请升级浏览器！
-	<source src="./source/audio.mp3">
-	<source src="./source/audio.ogg">
-</audio>
-```
-
-IE11下能够正常播放，IE8下出现我们自定义的提示信息
-
-![image-20210516004453236](assets/b5e863093973646c1e3bbbce16baaba0.png)
-
-![image-20210516005054543](assets/f11c3ab9ce3128eed193328a5256b8dc.png)
-
-IE8下不支持`audio`元素，但是可以使用`<embed>`元素在文档中的指定位置嵌入外部内容，这个内容是由外部应用程序或其他互动内容的来源提供的，如浏览器插件
-
-```html
-<embed src="./source/audio.mp3">
-```
-
-![image-20210516005207428](assets/5f54ccbb70bced3e23e549d4e2fbe2b6.png)
-
-### 2.视频
-
-使用`video`标签来向网页中引入一个视频，使用方式和`audio`基本上是一样的
-
-```html
-<video controls>
-    <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm">
-    <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
-    <embed src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
-</video>
-```
-
-![image-20210516012905334](assets/29e4c96daec4c5db577ac0a4ce5ce1b8.png)
-
-## 十三、表单
+## 十二、表单
 
 表单用于将本地的数据提交给远程的服务器，与后端控制层相关，表示一个整体，一个页面可含多个表单
 
 ```html
 <form action="表单要提交的服务器的地址" method="get默认，post...">
 
-	<label for="input的名字，用来表示这个label是那个input的"></label> for：
+    <label for="input的名字，用来表示这个label是那个input的"></label> for：<br>
+    <hr>
 
-	<span style="color: red;font-size: 10px;">***</span>：在某行内部设置文字
+    <input name="h1" type="hidden" value=""/>：隐藏域，不显示在网页中<br>
+    <input name="t1" type="text" value="默认值" maxlength="文本输入的最大长度" placeholder=""/>：普通文本框，显示默认值value，最多可以输入maxlength，输入时自动消失的默认值<br>
+    <input name="p1" type="password" maxlength="文本输入的最大长度"/>：隐藏输入的文本框（密码），最多可以输入maxlength<br>
+    <hr>
 
-	<input name="h1" type="hidden" value="" />：隐藏域，不显示在网页中
-	<input name="t1" type="text" value="默认值" maxlength="文本输入的最大长度" placeholder="" />：普通文本框，显示默认值value，最多可以输入maxlength，输入时自动消失的默认值
-	<input name="p1" type="password" maxlength="文本输入的最大长度" />：隐藏输入的文本框（密码），最多可以输入maxlength
-	
-	<input name="r1" type="radio" value="男" checked="true" />
-	<input name="r1" type="radio" value="女" />
-	单选按钮（注意按钮的name要一样，一样表示在同一个分组中，否则可以多选）  checked：默认选择
+    <input name="r1" type="radio" value="男" checked="true"/>男
+    <input name="r1" type="radio" value="女"/>女<br>
+    单选按钮（注意按钮的name要一样，一样表示在同一个分组中，否则可以多选） checked：默认选择
+    <hr>
 
-	<input name="c1" type="checkbox" value="11" />
-	<input name="c1" type="checkbox" value="22" />
-	多选按钮（name一样表示在同一个分组中）
+    <input name="c1" type="checkbox" value="11"/>篮球
+    <input name="c1" type="checkbox" value="22"/>足球<br>
+    多选按钮（name一样表示在同一个分组中）
+    <hr>
 
-	<input type="reset" value="重置" />：重置按钮，点击后所有内容重置
-	<input type="submit" value="提交" />：提交按钮，点击后所有内容提交
-	<input type="button" value="普通" />：普通按钮，功能可通过js自己写
+    <input type="reset" value="重置"/>：重置按钮，点击后所有内容重置
+    <br>
+    <input type="submit" value="提交"/>：提交按钮，点击后所有内容提交
+    <br>
+    <input type="button" value="普通"/>：普通按钮，功能可通过js自己写
+    <br>
+    <hr>
 
-	<input name="f1" type="file" />：选择文件
+    <input name="f1" type="file"/>：选择文件
+    <hr>
 
-	<textarea name="ar1" rows="行数" cols="列数"></textarea>：多行文本
+    <textarea name="ar1" rows="行数" cols="列数"></textarea>：多行文本
+    <hr>
 
-	<select name="s1">：下拉列表
-		<option value=""></option>：下拉选项
-	</select>
+    <select name="s1">：下拉列表
+        <option value="">下拉选项1</option><!--下拉选项-->
+        <option value="">下拉选项2</option>
+        <option value="">下拉选项3</option>
+    </select>
 </form>
 ```
 
-
-
-> 更多的可参考[菜鸟教程](https://www.runoob.com/html/html-tutorial.html)
-
-
-
-
-
-
+> 更多的可参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTML)、[菜鸟教程](https://www.runoob.com/html/html-tutorial.html)
 
 
 
