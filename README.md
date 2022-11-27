@@ -8,7 +8,7 @@
 
 # 💡技能树
 
-[HTML+CSS+JS]([1.HTML+CSS+JS)
+[HTML+CSS+JS](/View/1.HTML+CSS+JS/README)
 
 [Java](/Java/README)	|	[MySQL](/MySQL/README)
 
