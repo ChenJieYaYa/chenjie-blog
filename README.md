@@ -26,7 +26,7 @@
 
 
 
-​	|	[Maven](/Maven/Maven)	|	[Git](/Git/Git)	|	[Linux](/Linux/README)	|	[Docker](/Docker/README)
+[Maven](/Maven/Maven)	|	[Git](/Git/Git)	|	[Linux](/Linux/README)	|	[Docker](/Docker/README)
 
 ​				
 
