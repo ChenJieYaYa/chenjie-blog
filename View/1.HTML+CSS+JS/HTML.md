@@ -587,6 +587,65 @@ X<sub>2</sub>Y<sub>3</sub>
 
 ![1669548021654](assets/1669548021654.png)
 
+#### 1.3.响应式图片
+
+①`srcset`和`sizes`属性
+
+`srcset`定义**允许浏览器选择的图像集**，及每个**图像集的大小**，格式是`文件名 图像固有宽度(w)`
+
+`sizes`定义**媒体条件**并指定何种媒体条件下**选择哪个图片尺寸**，格式是`媒体条件 图像将填充的槽宽度`，槽宽度单位可以是`px`、`em`或`vw`，但不会是`%`
+
+`srcset`和`sizes`属性的逻辑执行过程如下，`sizes`最后一个槽宽度指当没有任何媒体条件为真时会选择它
+
+- **浏览器查看设备宽度，并检查`sizes`列表中哪个媒体条件为真**
+- **查看图像将填充的槽宽度，加载`srcset`列表中引用的最接近所选的槽大小的图像**
+
+```html
+<!--若浏览器以视窗宽度为480来加载页面，那么(max-width: 480px)媒体条件为真，因此440px的槽会被选择，所以./img/title.png将被加载-->
+<img
+     srcset="./img/png.png 320w,
+             ./img/title.png 480w,
+             ./img/jpg.jpg 800w"
+     sizes="(max-width: 320px) 280px,
+            (max-width: 480px) 440px,
+            800px"
+     src="./img/jpg.jpg"
+/>
+```
+
+但这种方式的缺点是可能会造成空间上的浪费且老旧浏览器不支持
+
+#### 5.2.srcset和x语法
+
+若访问页面的设备具有标准/低分辨率显示，即一个设备像素表示一个 CSS 像素，则`elva-fairy-320w.jpg`会被加载(1x 是默认值)；如果设备有高分辨率，即两个或更多的设备像素表示一个 CSS 像素，则`elva-fairy-640w.jpg` 会被加载
+
+```html
+<img
+     srcset="./img/png.png ,
+             ./img/title.png 1.5x,
+             ./img/jpg.jpg 2x"
+     src="./img/jpg.jpg"
+/>
+
+<style>
+    img {
+        width: 320px;
+    }
+</style>
+```
+
+#### 5.2.picture标签
+
+`<picture>`让我们能继续满足老式浏览器的需要，`<picture>`和`<video>`及`<audio>`类似，使用方式如下，其中`<source>`的`media`属性表示一个媒体条件，`srcset`属性包含要显示图片的路径， `</picture>`之前必须正确提供`<img>`元素以及它的`src`和`alt`属性，否则不会有图片显示，该`<img>`会被作为后备方案
+
+```html
+<picture>
+    <source media="(min-width: 400px)" srcset="./img/jpg.jpg">
+    <source media="(min-width: 800px)" srcset="./img/title.png">
+    <img src="./img/png.png">
+</picture>
+```
+
 ### 2.视频&音频
 
 #### 2.1.视频
@@ -699,26 +758,48 @@ WEBVTT
 
 ### 3.其他嵌入技术
 
+#### 3.1.iframe
 
-
-
-
-内联框架`iframe`，用于向当前页面中引入一个其他页面
-
-- `src`指定要引入的网页的路径
-- `frameborder`指定内联框架的边框
+`<iframe>`实现**将整个Web文档页嵌入到另一个网页**，很适合将第三方内容嵌入到你的网站，例如嵌入地图、在线视频提供商的视频等
 
 ```html
-<iframe src="https://www.qq.com" width="800" height="600" frameborder="0"></iframe>
+<iframe src="https://www.baidu.com/"></iframe>
+<iframe src="https://www.baidu.com/" width="200px" height="200px"></iframe>
+<iframe src="https://www.baidu.com/" allowfullscreen></iframe>
+<iframe src="https://www.baidu.com/" frameborder="10"></iframe>
 ```
 
 ![image-20210516001417802](assets/eb3a46bfa5df9d15306c7cc3b9cb81a8.png)
 
+`<iframe>`的属性如下
 
+|       属性        |                             描述                             |
+| :---------------: | :----------------------------------------------------------: |
+|       `src`       | 指向要嵌入文档的URL，为提高访问速度，建议在主内容完成加载后使用JS设置`src` |
+| `width`、`height` |                             宽高                             |
+| `allowfullscreen` |                        设置为全屏模式                        |
+|   `frameborder`   | 设置`<iframe>`的边框，值为0表示删除边框，但建议通过CSS设置边框 |
+|     `sandbox`     | 高版本浏览器支持，该属性用于提高安全性设置，给当前`iframe`进行权限限制 |
 
+`<iframe>`常常被黑客作为攻击目标(攻击向量)，例如**单向劫持**(黑客将隐藏的`iframe`嵌入到你的文档并使用它来捕获用户的交互，即用户名密码等敏感信息)是一种常见的`iframe`攻击，我们只在必要时才使用`<iframe>`，为保证安全性你可以
 
+- **使用HTTPS**：HTTPS是HTTP的加密版本，它减小远程内容在传输过程中被篡改的机会，同时防止嵌入式内容访问父文档内容，注意HTTPS需要安全证书，这可能有点贵！
+- **使用`sandbox`属性**：`sandbox`属性值请前往[🔗链接](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/iframe#attr-sandbox)，注意不要同时添加`allow-scripts`和`allow-same-origin`，否则嵌入式内容可绕过阻止站点执行脚本的同源安全策略，并使用JavaScript完全关闭沙盒
+- **配置CSP指令**：CSP指内容安全策略，它提供一组HTTP标头
 
+> [沙盒](https://en.wikipedia.org/wiki/Sandbox_(computer_security))指允许包含在盒内的代码以适当的方式执行或用于测试，但不能对其他代码库造成任何损坏的容器。黑客诱导你直接访问`iframe`之外的恶意内容则沙盒无法提供保护，若某些内容可能是恶意的可保证这些内容从不同的域向主站点提供服务
 
+#### 3.2.object&embed
+
+`<object>`和`<embed>`元素是嵌入多种类型的外部内容的通用嵌入工具，现在基本不会使用到
+
+|                                |                `object`                 |          `embed`          |
+| :----------------------------: | :-------------------------------------: | :-----------------------: |
+|         嵌入内容的路径         |                 `data`                  |           `src`           |
+|       嵌入内容的媒体类型       |                 `type`                  |          `type`           |
+|              宽高              |            `width`、`height`            |     `width`、`height`     |
+|  名称和值，将插件作为参数提供  | 单标签`<param>`元素，包含在内`<object>` |      `ad`、`hoc`属性      |
+| 独立的HTML作为不可用资源的回退 |    包含在元素`<object>`之后`<param>`    | `<noembed>`已过时，不支持 |
 
 ### 4.矢量图
 
@@ -783,38 +864,6 @@ SVG通过手工编码很容易实现，大多数人使用[Inkscape](https://inks
 ```html
 <embed src="./img/svg.svg" type="image/svg+xml">
 ```
-
-### 5.响应式图片
-
-> 此处专注于`<img>`标签的响应式图片，实际上**CSS是比HTML更好的响应式设计工具**
-
-#### 5.1.srcset和sizes属性
-
-`srcset`定义允许浏览器选择的图像集，及每个图像集的大小，格式是`文件名 图像固有宽度(w)`
-
-`sizes`定义媒体条件并指定何种媒体条件下选择哪个图片尺寸，格式是`媒体条件 图像将填充的槽宽度`，槽宽度单位可以是`px`、`em`或`vw`，但不会是`%`
-
-`srcset`和`sizes`属性的逻辑执行过程如下
-
-* 浏览器查看设备宽度，并检查`sizes`列表中哪个媒体条件为真
-* 查看图像将填充的槽宽度，加载`srcset`列表中引用的最接近所选的槽大小的图像
-
-```html
-<img srcset="elva-fairy-320w.jpg 320w,
-             elva-fairy-480w.jpg 480w,
-             elva-fairy-800w.jpg 800w"
-     sizes="(max-width: 320px) 280px,
-            (max-width: 480px) 440px,
-            800px"
-     src="elva-fairy-800w.jpg" alt="Elva dressed as a fairy">
-
-<!--sizes最后一个槽宽度指当没有任何媒体条件为真时会选择它-->
-<!--若浏览器以视窗宽度为480来加载页面，那么(max-width: 480px)媒体条件为真，因此440px的槽会被选择，所以elva-fairy-480w.jpg将被加载-->
-```
-
-但这种方式的缺点是可能会造成空间上的浪费且老旧浏览器不支持
-
-#### 5.2.picture元素
 
 ## 十一、表格
 
@@ -1321,7 +1370,15 @@ td {
 </form>
 ```
 
-> 更多的可参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTML)、[菜鸟教程](https://www.runoob.com/html/html-tutorial.html)
+> 更多的可参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element)、[菜鸟教程](https://www.runoob.com/html/html-tutorial.html)
+
+
+
+
+
+
+
+
 
 
 
