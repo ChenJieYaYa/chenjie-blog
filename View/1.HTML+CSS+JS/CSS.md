@@ -1,20 +1,175 @@
 # CSS
 
-## 一、什么是CSS？
+## 一、CSS是什么？
 
-网页实际上是一个**多层的结构**，通过CSS可以分别为网页的每一个层来设置样式，而最终我们能看到的只是网页的最上边一层，总之**CSS指层叠样式表，用来设置网页中元素的样式**，即内容与外观分离，灵活修改网页外观和同一网站的风格
+网页实际上是一个**多层的结构**，通过CSS可以分别为网页的每一个层来设置样式，而最终我们能看到的只是网页的最上边一层，总之**CSS(层叠样式表)用来设置网页中元素的样式**，即内容与外观分离，灵活修改网页外观和同一网站的风格
 
-## 二、CSS创建方式
+## 二、CSS工作流程
 
-### 1.行内(内联)样式
+以下是浏览器加载网页的简化流程，而不同的浏览器在处理这些文件时可能有不同的方式，但以下几个步骤基本都会出现
+
+①**浏览器加载HTML文件，并解析HTML文件为DOM**(Document Object Model)树，DOM是文件在计算机内存中的表现形式，*标记语言的每个元素、属性以及每段文字都对应DOM的节点*
+
+![1670852999298](assets/1670852999298.png)
+
+②**浏览器拉取该HTML相关的外部资源**，如图片、视频、CSS样式等，JavaScript则会稍后进行处理
+
+③**浏览器加载到CSS文件后解析成CSSOM树**
+
+![1670853107850](assets/1670853107850.png)
+
+④**合并DOM树和CSSOM树成一颗渲染树**
+
+![1670853205414](assets/1670853205414.png)
+
+⑤浏览器通过内核(WEBKIT)计算将渲染树的每个节点转换成屏幕上的实际像素
+
+> 遇到无法解析的CSS浏览器会直接跳过，而不是报错
+
+## 三、继承&层叠&优先级
+
+某些CSS明明书写正确但是为什么就是不起作用？这就需要了解到继承、层叠和优先级的概念
+
+### 1.继承
+
+**继承指设置在父元素上的CSS属性被子元素继承**，注意并不是所有属性都能被继承，例如`width`
+
+> 以`color`为例，MDN的[形式定义](https://developer.mozilla.org/zh-CN/docs/Web/CSS/color#%E5%BD%A2%E5%BC%8F%E5%AE%9A%E4%B9%89)标出该实现是否可以被继承
+
+------
+
+CSS为控制继承提供了五个特殊的通用属性值，每个CSS属性都接收这些值
+
+|     属性值     |                             说明                             |
+| :------------: | :----------------------------------------------------------: |
+|   `inherit`    |               开启继承，使父子元素该属性值相同               |
+|   `initial`    |      初始值，最好使用其他关键字替代，因为初始值并不确定      |
+|    `revert`    |                     还原成浏览器默认样式                     |
+| `revert-layer` |                  重置为在上一个层叠层中的值                  |
+|    `unset`     | 重置为自然值，若属性是自然继承那么是`inherit`，否则是`initial` |
+
+```html
+<ul id='inherit' style="color: green">
+    <li id="inherit1">Default <a href="#">link</a> color</li>
+    <!--继承父类，即inherit2的颜色，而inherit2继承自ul-->
+    <li id="inherit2">Inherit the <a href="#" style="color: inherit">link</a> color</li>
+    <li id="inherit3">Initial the <a href="#" style="color: initial">link</a> color</li>
+    <li id="inherit4">Revert the <a href="#" style="color: revert">link</a> color</li>
+    <li id="inherit5">Unset the <a href="#" style="color: unset">link</a> color</li>
+</ul>
+```
+
+![1670857571767](assets/1670857571767.png)
+
+------
+
+CSS提供`all`属性用于重设(几乎所有)属性值，它的值可以是`inherit`、`initial`、`revert`或`unset`，测试HTML如下
+
+```html
+<div id="all-default">default</div>
+<div id="all-inherit">inherit</div>
+<div id="all-initial">initial</div>
+<div id="all-revert">revert</div>
+<div id="all-unset">unset</div>
+
+<style>
+    div {
+        margin-top: 5px;
+        background-color: skyblue;
+        border: 5px solid cornflowerblue;
+    }
+
+    #all-inherit {
+        all: inherit;
+    }
+
+    #all-initial {
+        all: initial;
+    }
+
+    #all-revert {
+        all: revert;
+    }
+
+    #all-unset {
+        all: unset;
+    }
+</style>
+```
+
+![1670858389981](assets/1670858389981.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 1.层叠
+
+样式表层叠简单来说就是**CSS规则的顺序很重要**，当应用两条同级别的规则到同一元素时**靠后的规则起作用**
+
+### 2.优先级
+
+优先级决定CSS规则的使用顺序，一般地**越具体、范围越小的CSS规则优先级越高**
+
+
+
+
+
+
+
+
+
+
+
+现在让我们来看看浏览器如何计算优先级。我们已经知道一个元素选择器比类选择器的优先级更低，会被其覆盖。本质上，不同类型的选择器有不同的分数值，把这些分数相加就得到特定选择器的权重，然后就可以进行匹配。
+
+一个选择器的优先级可以说是由三个不同的值（或分量）相加，可以认为是百（ID）十（类）个（元素）——三位数的三个位数：
+
+- **ID**：选择器中包含 ID 选择器则百位得一分。
+- **类**：选择器中包含类选择器、属性选择器或者伪类则十位得一分。
+- **元素**：选择器中包含元素、伪元素选择器则个位得一分。
+
+
+
+**备注：** 通用选择器（[`*`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Universal_selectors)）、组合符（`+`、`>`、`~`、' '）和调整优先级的选择器（[`:where()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:where)）不会影响优先级。
+
+
+
+## 三、CSS创建方式
+
+### 1.内联样式
 
 在标签内部通过`style`属性来设置元素的样式
 
 ```html
-<p style="color:red;font-size:60px;">内联样式（行内样式）</p>
+<p style="background-color: bisque">内联样式（行内样式）</p>
 ```
 
-但**行内样式只能对一个标签生效**，若多个标签都需要该样式，那么则每个标签都需要复制一个，非常不方便，所以出现内部样式表和外部样式表，注意开发时绝对不要使用行内样式
+但**行内样式只能对一个标签生效**，若多个标签都需要该样式，那么则每个标签都需要复制一个，非常不方便，所以出现内部样式表和外部样式表，注意开发时最好不要使用行内样式，难以维护！
 
 ### 2.内部样式表
 
@@ -23,11 +178,15 @@
 ```html
 <head>
     <style>
-        p{
-            color: red;
+        p {
+            background-color: plum;
         }
     </style>
 </head>
+
+<body>
+    <p>内部样式表</p>
+</body>
 ```
 
 ### 3.外部样式表
@@ -35,12 +194,44 @@
 可以将CSS样式编写到一个外部的CSS文件中，然后通过`link`标签来引入外部的CSS文件，外部CSS文件只需要引入就可**复用**
 
 ```html
-<link rel="stylesheet" href="./style.css" type="text/css">
+<head>
+    <link rel="stylesheet" href="./css/test.css">
+</head>
 ```
 
 将样式编写到外部的CSS文件中，可以使用到浏览器的**缓存机制**，从而加快网页的加载速度，提高用户的体验
 
 **优先级：行内 > 内部 > 外部 > 默认**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 三、选择器
 

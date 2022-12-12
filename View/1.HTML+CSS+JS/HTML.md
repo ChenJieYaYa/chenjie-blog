@@ -828,7 +828,7 @@ SVG矢量图文件本质**由XML语言组成，标记图形，而不是内容**�
 </svg>
 ```
 
-SVG通过手工编码很容易实现，大多数人使用[Inkscape](https://inkscape.org/en/)或[Illustrator](https://en.wikipedia.org/wiki/Adobe_Illustrator)等矢量图形编辑器编辑，SCG图像的每个标签可单独通过CSS或JS控制，这意味着通过CSS或JS可控制矢量图的部分元素，但SVG图容易变得复杂，导致浏览器处理SVG图的事件边长，且某些旧版本浏览器尚未支持SVG
+SVG通过手工编码很容易实现，大多数人使用[Inkscape](https://inkscape.org/en/)或[Illustrator](https://en.wikipedia.org/wiki/Adobe_Illustrator)等矢量图形编辑器编辑，SVG图像的每个标签可单独通过CSS或JS控制，这意味着通过CSS或JS可控制矢量图的部分元素，但SVG图容易变得复杂，导致浏览器处理SVG图的事件边长，且某些旧版本浏览器尚未支持SVG
 
 #### 4.3.SVG嵌入网页
 
