@@ -26,154 +26,19 @@
 
 > 遇到无法解析的CSS浏览器会直接跳过，而不是报错
 
-## 三、继承&层叠&优先级
-
-某些CSS明明书写正确但是为什么就是不起作用？这就需要了解到继承、层叠和优先级的概念
-
-### 1.继承
-
-**继承指设置在父元素上的CSS属性被子元素继承**，注意并不是所有属性都能被继承，例如`width`
-
-> 以`color`为例，MDN的[形式定义](https://developer.mozilla.org/zh-CN/docs/Web/CSS/color#%E5%BD%A2%E5%BC%8F%E5%AE%9A%E4%B9%89)标出该实现是否可以被继承
-
-------
-
-CSS为控制继承提供了五个特殊的通用属性值，每个CSS属性都接收这些值
-
-|     属性值     |                             说明                             |
-| :------------: | :----------------------------------------------------------: |
-|   `inherit`    |               开启继承，使父子元素该属性值相同               |
-|   `initial`    |      初始值，最好使用其他关键字替代，因为初始值并不确定      |
-|    `revert`    |                     还原成浏览器默认样式                     |
-| `revert-layer` |                  重置为在上一个层叠层中的值                  |
-|    `unset`     | 重置为自然值，若属性是自然继承那么是`inherit`，否则是`initial` |
-
-```html
-<ul id='inherit' style="color: green">
-    <li id="inherit1">Default <a href="#">link</a> color</li>
-    <!--继承父类，即inherit2的颜色，而inherit2继承自ul-->
-    <li id="inherit2">Inherit the <a href="#" style="color: inherit">link</a> color</li>
-    <li id="inherit3">Initial the <a href="#" style="color: initial">link</a> color</li>
-    <li id="inherit4">Revert the <a href="#" style="color: revert">link</a> color</li>
-    <li id="inherit5">Unset the <a href="#" style="color: unset">link</a> color</li>
-</ul>
-```
-
-![1670857571767](assets/1670857571767.png)
-
-------
-
-CSS提供`all`属性用于重设(几乎所有)属性值，它的值可以是`inherit`、`initial`、`revert`或`unset`，测试HTML如下
-
-```html
-<div id="all-default">default</div>
-<div id="all-inherit">inherit</div>
-<div id="all-initial">initial</div>
-<div id="all-revert">revert</div>
-<div id="all-unset">unset</div>
-
-<style>
-    div {
-        margin-top: 5px;
-        background-color: skyblue;
-        border: 5px solid cornflowerblue;
-    }
-
-    #all-inherit {
-        all: inherit;
-    }
-
-    #all-initial {
-        all: initial;
-    }
-
-    #all-revert {
-        all: revert;
-    }
-
-    #all-unset {
-        all: unset;
-    }
-</style>
-```
-
-![1670858389981](assets/1670858389981.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 1.层叠
-
-样式表层叠简单来说就是**CSS规则的顺序很重要**，当应用两条同级别的规则到同一元素时**靠后的规则起作用**
-
-### 2.优先级
-
-优先级决定CSS规则的使用顺序，一般地**越具体、范围越小的CSS规则优先级越高**
-
-
-
-
-
-
-
-
-
-
-
-现在让我们来看看浏览器如何计算优先级。我们已经知道一个元素选择器比类选择器的优先级更低，会被其覆盖。本质上，不同类型的选择器有不同的分数值，把这些分数相加就得到特定选择器的权重，然后就可以进行匹配。
-
-一个选择器的优先级可以说是由三个不同的值（或分量）相加，可以认为是百（ID）十（类）个（元素）——三位数的三个位数：
-
-- **ID**：选择器中包含 ID 选择器则百位得一分。
-- **类**：选择器中包含类选择器、属性选择器或者伪类则十位得一分。
-- **元素**：选择器中包含元素、伪元素选择器则个位得一分。
-
-
-
-**备注：** 通用选择器（[`*`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Universal_selectors)）、组合符（`+`、`>`、`~`、' '）和调整优先级的选择器（[`:where()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:where)）不会影响优先级。
-
-
-
 ## 三、CSS创建方式
 
 ### 1.内联样式
 
-在标签内部通过`style`属性来设置元素的样式
+**标签内部通过`style`属性来设置元素的内联样式**，但**行内样式只能对一个标签生效**，若多个标签都需要该样式，那么则每个标签都需要复制一个，非常不方便，所以出现内部样式表和外部样式表，注意开发时最好不要使用行内样式，难以维护！
 
 ```html
 <p style="background-color: bisque">内联样式（行内样式）</p>
 ```
 
-但**行内样式只能对一个标签生效**，若多个标签都需要该样式，那么则每个标签都需要复制一个，非常不方便，所以出现内部样式表和外部样式表，注意开发时最好不要使用行内样式，难以维护！
-
 ### 2.内部样式表
 
-将样式编写到`head`中的`style`标签里，然后通过CSS的选择器来选中元素并为其设置各种样式可以同时为多个标签设置样式，并且修改时只需要修改一处即可，但**内部样式只会对当前HTML起作用**，即**只对一个网页起作用**
+**将样式编写到`head`中的`style`标签里，然后通过CSS的选择器来选中元素并为其设置各种样式可以同时为多个标签设置样式**，但内部样式只会对当前HTML起作用，即**只对一个网页起作用**
 
 ```html
 <head>
@@ -191,7 +56,7 @@ CSS提供`all`属性用于重设(几乎所有)属性值，它的值可以是`inh
 
 ### 3.外部样式表
 
-可以将CSS样式编写到一个外部的CSS文件中，然后通过`link`标签来引入外部的CSS文件，外部CSS文件只需要引入就可**复用**
+**可以将CSS样式编写到一个外部的CSS文件中，然后通过`link`标签来引入外部的CSS文件**，外部CSS文件只需要引入就可复用。将样式编写到外部的CSS文件中可以利用到浏览器的**缓存机制**，从而加快网页的加载速度，提高用户的体验
 
 ```html
 <head>
@@ -199,177 +64,436 @@ CSS提供`all`属性用于重设(几乎所有)属性值，它的值可以是`inh
 </head>
 ```
 
-将样式编写到外部的CSS文件中，可以使用到浏览器的**缓存机制**，从而加快网页的加载速度，提高用户的体验
+>  **优先级：行内 > 内部 > 外部 > 默认**
 
-**优先级：行内 > 内部 > 外部 > 默认**
+## 四、选择器
 
+### 1.选择器是什么？
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 三、选择器
-
-### 1.什么是选择器？
-
-通过选择器可以选中页面的指定元素，为指定元素添加指定样式
+通过选择器可以选中页面的指定元素，为指定元素添加指定样式，选择器所选择的元素叫做选择器的对象
 
 ### 2.通配选择器
 
 通配选择器用于选中页面中的所有元素，语法是`*{}`
 
 ```css
-*{
-    color: red;
-}
+<head>
+    <style>
+        * {
+            color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+	<h1>通配选择器*{}</h1>
+</body>
 ```
 
 ### 3.元素选择器
 
-元素选择器也叫类型选择器、标签选择器，用于根据标签名来选中指定的元素，语法是`elementname{}`，例如`p{}`、`h1{}`、`div{}`
+元素选择器也叫类型选择器、标签选择器，用于根据标签名来选中指定的元素，语法是`ElementName{}`
 
 ```css
-p{
-    color: red; 
-}
-h1{
-    color: green;
-}
+<head>
+    <style>
+        div {
+            color: cornflowerblue;
+        }
+    </style>
+</head>
+
+<body>
+	<div>元素选择器ElementName{}</div>
+</body>
 ```
 
 ### 4.类选择器
 
-类选择器根据元素的`class`属性值选中一组元素，语法是`.classname{}`，例如`.blue{}`
+类选择器根据元素的`class`属性值来选中指定的元素，语法是`.ClassName{}`。**👀`class`属性值可以重复**，通过`class`属性可为元素设置分组，**同一个元素可同时指定多个`class`属性值**
 
 ```css
-.blue{
-    color: blue;
-}
-.size{
-    font-size: 20px;
-}
-```
+<head>
+    <style>
+        .class-selector1 {
+            color: aquamarine;
+        }
 
-`class`是一个标签的属性，它和`id`类似，不同的是`class`可以重复使用，可以通过`class`属性来为元素分组，可以同时为一个元素指定多个`class`属性
+        .class-selector2 {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div class="class-selector1 class-selector2">类选择器ClassName{}</div>
+</body>
+```
 
 ### 5.ID选择器
 
-ID选择器根据元素的`id`属性值选中一个元素，语法是`#idname{}`，例如`#box{}`、`#red{}`
+ID选择器根据元素的`id`属性值来选中指定的元素，语法是`#idname{}`。**👀`id`属性值不可重复，同一个元素不可同时指定多个`id`属性值**
 
 ```css
-#red{
-    color: red;
-}
+<head>
+    <style>
+        #id-selector1 {
+            color: chartreuse;
+        }
+    </style>
+</head>
+
+<body>
+	<div id="id-selector1">ID选择器IdName{}</div>
+</body>
 ```
 
 ### 6.属性选择器
 
-属性选择器根据元素的属性值选中一组元素，语法主要有如下几类
+属性选择器根据元素的属性值来选中指定的元素，语法主要有如下几类
 
-* `[属性名]`：选择含有指定属性的元素
-* `[属性名=属性值]`：选择含有指定属性和属性值的元素
-* `[属性名^=属性值]`：选择属性值以指定值开头的元素
-* `[属性名$=属性值]`：选择属性值以指定值结尾的元素
-* `[属性名*=属性值]`：选择属性值中含有某值的元素
+①`[属性名]`：选择含有指定属性的元素
 
-例如`p[title]{}`、`p[title=e]{}`、`p[title^=e]{}`、`p[title$=e]{} p[title*=e]{}`
+```html
+<head>
+    <style>
+        [style] {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div style="color: plum">属性选择器：①`[属性名]`：选择含有指定属性的元素</div>
+</body>
+```
+
+②`[属性名="属性值"]`：选择含有指定属性和属性值的元素
+
+```html
+<head>
+    <style>
+        [style="background-color:cornflowerblue;color: black"] {
+            border: 5px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div style="background-color:cornflowerblue;color: black">
+      属性选择器：③`[属性名^="属性值"]`：选择属性值以指定值开头的元素
+    </div>
+</body>
+```
+
+③`[属性名^="属性值"]`：选择属性值以指定值开头的元素
+
+```html
+<head>
+    <style>
+        [style^='fon'] {
+            border: 5px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div style="font-size: 30px">属性选择器：③`[属性名^="属性值"]`：选择属性值以指定值开头的元素</div>
+</body>
+```
+
+④`[属性名$="属性值"]`：选择属性值以指定值结尾的元素
+
+```html
+<head>
+    <style>
+        [style$='0px'] {
+            border: 5px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div style="font-size: 30px">属性选择器：④`[属性名$='属性值']`：选择属性值以指定值结尾的元素</div>
+</body>
+```
+
+⑤`[属性名*="属性值"]`：选择属性值中含有某值的元素
+
+```html
+<head>
+    <style>
+        [style*='si'] {
+            border: 5px solid black;
+        }
+    </style>
+</head>
+
+<body>
+	<div style="font-size: 30px">属性选择器：⑤`[属性名*='属性值']`：选择属性值中含有某值的元素</div>
+</body>
+```
 
 ### 7.复合选择器
 
-#### 7.1.交集选择器
+*复合选择器中任意选择器存在语法错误将会导致整条规则被忽略*
 
-交集选择器选中**同时复合多个条件的元素**，语法是`选择器1选择器2选择器3选择器n{}`，注意点交集选择器中如果有元素选择器，必须使用元素选择器开头
+①交集选择器：选中同时包含所有选择器的元素，语法是`选择器1选择器2选择器3选择器n{}`，注意**交集选择器中如果有元素选择器则必须使用元素选择器开头**
 
 ```css
-div.red{
-    font-size: 30px;
-}
-.a.b.c{
-    color: blue;
-}
+<head>
+    <style>
+        div#intersection-id-selector1.intersection-class-selector1 {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+
+<body>
+	<div id="intersection-id-selector1" class="intersection-class-selector1">
+      交集选择器：选择器1选择器2选择器3选择器n{}(交集选择器中如果有元素选择器则必须使用元素选择器开头)
+    </div>
+</body>
 ```
 
-#### 7.2.并集选择器
-
-并集选择器**同时选择多个选择器对应的元素**，语法是`选择器1,选择器2,选择器3,选择器n{}`，例如`#b1,.p1,h1,span,div.red{}`
+②并集选择器：选中包含其中任意选择器的元素，语法是`选择器1,选择器2,选择器3,选择器n{}`
 
 ```css
-h1,span{
-    color: green;
-}
+<head>
+    <style>
+        #intersection-id-selector2, .intersection-class-selector2 {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+
+<body>
+	<div id="intersection-id-selector2">
+      并集选择器：选择器1,选择器2,选择器3,选择器n{}
+    </div>
+    <div class="intersection-class-selector2 other-class">
+      并集选择器：选择器1,选择器2,选择器3,选择器n{}
+    </div>
+</body>
 ```
 
 ### 8.关系选择器
 
-#### 8.1.种类
+①子元素选择器：选中父元素下的子元素，*子元素指父元素下的相邻一级元素*，语法是`父元素 > 子元素{}`
 
-- 父元素：直接包含子元素的元素叫做父元素
-- 子元素：直接被父元素包含的元素是子元素
-- 祖先元素：直接或间接包含后代元素的元素叫做祖先元素；一个元素的父元素也是它的祖先元素
-- 后代元素：直接或间接被祖先元素包含的元素叫做后代元素；子元素也是后代元素
-- 兄弟元素：拥有相同父元素的元素是兄弟元素
+```html
+<head>
+    <style>
+        .relation-selector1-fu > .relation-selector1-zi {
+            color: plum;
+        }
+    </style>
+</head>
 
-#### 8.2.子元素选择器
-
-子元素选择器选中指定父元素的指定子元素，语法是`父元素 > 子元素{}`，例如`A > B{}`
-
-```css
-div.box > p > span{
-    color: orange;
-}
+<body>
+	<div class="relation-selector1-fu" style="border: 3px solid darkred;padding: 9px">
+      <div class="relation-selector1-zi" style="border: 3px solid red;padding: 9px">
+        level2
+        <span class="relation-selector1-zi" style="border: 3px solid coral;margin: 3px">level3.1</span>
+        <span class="relation-selector1-zi" style="border: 3px solid coral;margin: 3px">level3.2</span>
+      </div>
+    </div>
+</body>
 ```
 
-#### 8.3.后代元素选择器
+②后代元素选择器：选中祖先元素下的所有元素，*后代元素指祖先元素下的所有元素*，语法是`祖先 后代{}`
 
-后代元素选择器选中指定元素内的指定后代元素，语法是`祖先 后代{}`，例如`A B{}`
+```html
+<head>
+    <style>
+        .relation-selector2-gfu .relation-selector2-zi {
+            color: plum;
+        }
+    </style>
+</head>
 
-```css
-div span{
-    color: skyblue;
-}
+<body>
+	<div class="relation-selector2-gfu" style="border: 3px solid darkred;padding: 9px">
+      <div class="relation-selector2-zi" style="border: 3px solid red;padding: 9px">
+        level2
+        <span class="relation-selector2-zi" style="border: 3px solid coral;margin: 3px">level3.1</span>
+        <span class="relation-selector2-zi" style="border: 3px solid coral;margin: 3px">level3.2</span>
+      </div>
+    </div>
+</body>
 ```
 
-#### 8.4.兄弟元素选择器
+③兄弟元素选择器：*兄弟元素指拥有相同父元素的元素*，存在两种兄弟元素选择器，语法分别是`前一个 + 下一个{}`、`前一个 ~ 下一组{}`，其中**下一个就只有一个，下一组可以不连续**
 
-兄弟元素选择器选择下一个兄弟，语法是`前一个 + 下一个{}`、`前一个 ~ 下一组{}`，例如`A1 + A2{}`、`A1 ~ An{}`
+```html
+<head>
+    <style>
+        .relation-selector3-bro1 + div {
+            color: black;
+            font-size: 40px;
+        }
 
-```css
-p + span{	/*p相邻标记span*/
-    color: red;
-}
-p ~ span{	/*p与下一个标记span，中间可包含其他标记*/
-    color: red;
-}
+        .relation-selector3-bro2 ~ div {
+            color: black;
+            font-size: 40px;
+        }
+    </style>
+</head>
+
+<body>
+	<!--`前一个 + 下一个{}`-->
+    <div style="border: 3px solid darkred;padding: 9px">
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro0</div>
+      <div class="relation-selector3-bro1" style="border: 3px solid red;padding: 9px;margin-top: 4px">bro1</div>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro2</div>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro3</div>
+      <p style="border: 3px solid red;padding: 9px;margin-top: 4px">bro4</p>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro5</div>
+    </div>
+    <!--`前一个 ~ 下一组{}`-->
+    <div style="border: 3px solid darkred;padding: 9px">
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro0</div>
+      <div class="relation-selector3-bro2" style="border: 3px solid red;padding: 9px;margin-top: 4px">bro1</div>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro2</div>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro3</div>
+      <p style="border: 3px solid red;padding: 9px;margin-top: 4px">bro4</p>
+      <div style="border: 3px solid red;padding: 9px;margin-top: 4px">bro5</div>
+    </div>
+</body>
 ```
 
 ### 9.伪类选择器
 
-伪类即为不存在的类，特殊的类，伪类用来描述一个元素的特殊状态，比如第一个子元素、被点击的元素、鼠标移入的元素.…，伪类一般情况下都是使用`:`开头
+伪类即为不存在的类，用于描述某元素的特殊状态，例如鼠标移入、鼠标点击等。**伪类语法是`selector:伪类动作{}`，函数式伪类可添加`()`来定义参数**，添加伪类的元素称为锚元素，咱就是说伪类真的多！积累学习
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+①元素显状态伪类：`:fullscreen`匹配当前处于全屏模式的元素
+
+②树结构伪类：`:root`匹配文档根元素，`:empty`匹配除空白字符外无子元素的元素
+
+③函数式伪类：`:is()`匹配与参数列表中存在的选择器匹配的元素，`:not()`匹配参数列表中未出现的任何元素，`:where()`优先级，`:has()`匹配与参数列表锚定的元素的相对选择器相匹配的元素
+
+④伪类真是多！需要用的时候慢慢学吧
+
+|         伪类          |  说明  |
+| :-------------------: | :----: |
+|       `:active`       |        |
+|      `:any-link`      |        |
+|      `:autofill`      |        |
+|       `:blank`        | 实验性 |
+|      `:checked`       |        |
+|      `:current`       | 实验性 |
+|      `:default`       |        |
+|      `:defined`       |        |
+|       `:dir()`        | 实验性 |
+|      `:disabled`      |        |
+|       `:empty`        |        |
+|      `:enabled`       |        |
+|       `:first`        |        |
+|    `:first-child`     |        |
+|   `:first-of-type`    |        |
+|     `:fullscreen`     |        |
+|       `:future`       | 实验性 |
+|       `:focus`        |        |
+|   `:focus-visible`    |        |
+|    `:focus-within`    |        |
+|       `:has()`        | 实验性 |
+|        `:host`        |        |
+|   `:host-context()`   | 实验性 |
+|       `:hover`        |        |
+|   `:indeterminate`    |        |
+|      `:in-range`      |        |
+|      `:invalid`       |        |
+|        `:is()`        |        |
+|       `:lang()`       |        |
+|     `:last-child`     |        |
+|    `:last-of-type`    |        |
+|        `:left`        |        |
+|        `:link`        |        |
+|     `:local-link`     | 实验性 |
+|   `:modal` (en-US)    |        |
+|       `:not()`        |        |
+|    `:nth-child()`     |        |
+| `:nth-col()` (en-US)  | 实验性 |
+|  `:nth-last-child()`  |        |
+|   `:nth-last-col()`   | 实验性 |
+| `:nth-last-of-type()` |        |
+|   `:nth-of-type()`    |        |
+|     `:only-child`     |        |
+|    `:only-of-type`    |        |
+|      `:optional`      |        |
+|    `:out-of-range`    |        |
+|                       |        |
+|                       |        |
+|                       |        |
+
+
+
+
+
+
+
+- [`:past` (en-US)](https://developer.mozilla.org/en-US/docs/Web/CSS/:past) 实验性
+- [`:picture-in-picture`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:picture-in-picture)
+- [`:placeholder-shown`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:placeholder-shown)
+- [`:paused` (en-US)](https://developer.mozilla.org/en-US/docs/Web/CSS/:paused)
+- [`:playing` (en-US)](https://developer.mozilla.org/en-US/docs/Web/CSS/:playing)
+
+R
+
+- [`:read-only`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:read-only)
+- [`:read-write`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:read-write)
+- [`:required`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:required)
+- [`:right`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:right)
+- [`:root`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:root)
+
+S
+
+- [`:scope`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:scope)
+- `:state()` 实验性
+
+T
+
+- [`:target`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:target)
+- [`:target-within` (en-US)](https://developer.mozilla.org/en-US/docs/Web/CSS/:target-within) 实验性
+
+U
+
+- [`:user-invalid` (en-US)](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) 实验性
+
+V
+
+- [`:valid`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:valid)
+- [`:visited`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:visited)
+
+W
+
+- [`:where()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:where)
+
+
+
+
+
+
+
+优先级调整伪类匹配与提供的列表中的任何选择器匹配的任何元素，但不添加任何优先级权重
+
+
+
+
 
 - `:first-child` 第一个子元素
 - `:last-child` 最后一个子元素
@@ -377,16 +501,45 @@ p ~ span{	/*p与下一个标记span，中间可包含其他标记*/
   - 2n或even：选中偶数位的元素
   - 2n+1或odd：选中奇数位的元素
 
-* `:first-of-type` 同类型中的第一个子元素
+- `:first-of-type` 同类型中的第一个子元素
+- `:last-of-type` 同类型中的最后一个子元素
+- `:nth-of-type(n)` 选中同类型中的第n个子元素
+- `:not()` 否定伪类，将符合条件的元素从选择器中去除
 
-* `:last-of-type` 同类型中的最后一个子元素
 
-* `:nth-of-type(n)` 选中同类型中的第n个子元素
 
-* `:not()` 否定伪类，将符合条件的元素从选择器中去除
 
-  ```css
-  /* ul下所有li，黑色 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+**备注：** 相较于伪类，[伪元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements)可用于设置元素*特定部分*的样式。
+
+
+
+
+
+
+
+
+
+
+
+
+
+- 
+
+* ```css
+/* ul下所有li，黑色 */
   ul>li {
       color: black;
   }
@@ -407,7 +560,7 @@ p ~ span{	/*p与下一个标记span，中间可包含其他标记*/
       color: orange;
   }
   ```
-
+  
   ![image-20210516162703966](assets/3373666820269df4830e7827c7b9623b.png)
 
 * `:link` 未访问的链接
@@ -516,6 +669,210 @@ p ~ span{	/*p与下一个标记span，中间可包含其他标记*/
 ```
 
 ![动画2021-5-4](assets/858a2f406397f3cc60881a1a1ee12a1d.gif)
+
+
+
+
+
+## 三、继承&层叠&优先级
+
+### 1.继承
+
+**继承指设置在父元素上的CSS属性被子元素继承**，注意并不是所有属性都能被继承，例如`width`。以`color`为例，MDN的[形式定义](https://developer.mozilla.org/zh-CN/docs/Web/CSS/color#%E5%BD%A2%E5%BC%8F%E5%AE%9A%E4%B9%89)标出该实现是否可以被继承
+
+------
+
+CSS为控制继承提供了五个特殊的通用属性值，每个CSS属性都接收这些值
+
+|     属性值     |                             说明                             |
+| :------------: | :----------------------------------------------------------: |
+|   `inherit`    |               开启继承，使父子元素该属性值相同               |
+|   `initial`    |      初始值，最好使用其他关键字替代，因为初始值并不确定      |
+|    `revert`    |                     还原成浏览器默认样式                     |
+| `revert-layer` |                  重置为在上一个层叠层中的值                  |
+|    `unset`     | 重置为自然值，若属性是自然继承那么是`inherit`，否则是`initial` |
+
+```html
+<ul id='inherit' style="color: green">
+    <li id="inherit1">Default <a href="#">link</a> color</li>
+    <!--继承父类，即inherit2的颜色，而inherit2继承自ul-->
+    <li id="inherit2">Inherit the <a href="#" style="color: inherit">link</a> color</li>
+    <li id="inherit3">Initial the <a href="#" style="color: initial">link</a> color</li>
+    <li id="inherit4">Revert the <a href="#" style="color: revert">link</a> color</li>
+    <li id="inherit5">Unset the <a href="#" style="color: unset">link</a> color</li>
+</ul>
+```
+
+![1670857571767](assets/1670857571767.png)
+
+------
+
+CSS提供`all`属性用于重设(几乎所有)属性值，它的值可以是`inherit`、`initial`、`revert`或`unset`，测试HTML如下
+
+```html
+<div id="all-default">default</div>
+<div id="all-inherit">inherit</div>
+<div id="all-initial">initial</div>
+<div id="all-revert">revert</div>
+<div id="all-unset">unset</div>
+
+<style>
+    div {
+        margin-top: 5px;
+        background-color: skyblue;
+        border: 5px solid cornflowerblue;
+    }
+
+    #all-inherit {
+        all: inherit;
+    }
+
+    #all-initial {
+        all: initial;
+    }
+
+    #all-revert {
+        all: revert;
+    }
+
+    #all-unset {
+        all: unset;
+    }
+</style>
+```
+
+![1670858389981](assets/1670858389981.png)
+
+### 2.层叠
+
+样式表层叠简单来说就是**CSS规则的顺序很重要**，当应用两条同级别的规则到同一元素时**靠后的规则起作用**
+
+### 3.优先级
+
+冲突规则中靠后元素起作用并不是绝对的，还需要看优先级！优先级决定CSS规则的使用顺序，一般地**越具体、范围越小的CSS规则优先级越高**
+
+浏览器如何计算优先级？本质上不同类型的选择器有不同的分数值，把这些分数相加就得到特定选择器的权重，例如ID选择器是百位、类选择器是十位、元素选择器是个位，若选择器包含ID选择器则百位加一，依次类推。`*`、`+`、`>`、`~`、`:where()`选择器不会影响优先级，`:not()`和`:is()`等伪类本身对优先级无影响，但参数会带来影响，优先级最大的参数将作为该伪类的优先级
+
+|                  选择器                   |  ID  |  类  | 元素 | 优先级 |
+| :---------------------------------------: | :--: | :--: | :--: | :----: |
+|                   `h1`                    |  0   |  0   |  1   | 0-0-1  |
+|          `h1 + p::first-letter`           |  0   |  0   |  3   | 0-0-3  |
+| `li > a[href*="en-US"] > .inline-warning` |  0   |  2   |  2   | 0-2-2  |
+|               `#identifier`               |  1   |  0   |  0   | 1-0-0  |
+|       `button:not(#mainBtn, .cta)`        |  1   |  0   |  1   | 1-0-1  |
+
+
+
+
+
+这里发生了什么？首先，我们先看看最上面的选择器规则，你会发现，我们已经把优先级计算出来放在最前面的注释里。
+
+- 前面两个选择器都是链接背景颜色的样式——第二个赢了使得背景变成蓝色，因为它多了一个 ID 选择器：优先级 2-0-1 vs. 1-0-1。
+- 第三四个选择器都是链接文本颜色样式——后者赢了使得文本变成白色，因为它虽然少一个元素选择器，但是多了一个类选择器。所以优先级是 1-1-3 vs. 1-0-4。
+- 第 5 到 7 个选择器都是鼠标悬停时链接边框样式。第六个显然输给了第五个，优先级是 0-2-3 vs. 0-2-4——少了个元素选择器。第七个，比第五第六都高——子选择器数量相同，但是有一个元素选择器变成类选择器。所以最后优先级是 0-3-3 vs. 0-2-3 和 0-2-4。
+
+```
+/* 1. specificity: 1-0-1 */
+#outer a {
+    background-color: red;
+}
+        
+/* 2. specificity: 2-0-1 */
+#outer #inner a {
+    background-color: blue;
+}
+
+/* 3. specificity: 1-0-4 */
+#outer div ul li a {
+    color: yellow;
+}
+
+/* 4. specificity: 1-1-3 */
+#outer div ul .nav a {
+    color: white;
+}
+
+/* 5. specificity: 0-2-4 */
+div div li:nth-child(2) a:hover {
+    border: 10px solid black;
+}
+
+/* 6. specificity: 0-2-3 */
+div li:nth-child(2) a:hover {
+    border: 10px dashed black;
+}
+
+/* 7. specificity: 0-3-3 */
+div div .nav:nth-child(2) a:hover {
+    border: 10px double black;
+}
+
+a {
+    display: inline-block;
+    line-height: 40px;
+    font-size: 20px;
+    text-decoration: none;
+    text-align: center;
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+ul {
+    padding: 0;
+}
+
+li {
+    list-style-type: none;
+}          
+
+
+<div id="outer" class="container">
+    <div id="inner" class="container">
+        <ul>
+            <li class="nav"><a href="#">One</a></li>
+            <li class="nav"><a href="#">Two</a></li>
+        </ul>
+    </div>
+</div>
+    
+```
+
+内联样式`!important`用于修改特定属性的值，能够覆盖普通规则的层叠
+
+```
+#winning {
+    background-color: red;
+    border: 1px solid black;
+}
+    
+.better {
+    background-color: gray;
+    border: none !important;
+}
+    
+p {
+    background-color: blue;
+    color: white;
+    padding: 5px;
+}           
+    
+    
+    <p class="better">This is a paragraph.</p>
+<p class="better" id="winning">One selector to rule them all!</p>
+    
+```
+
+ 覆盖 `!important` 唯一的办法就是另一个 `!important` 具有相同*优先级*而且顺序靠后，或者更高优先级
+
+
+
+
+
+
+
+
+
+
 
 ## 四、长度单位
 

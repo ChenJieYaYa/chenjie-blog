@@ -1,119 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ChenJieYaYa</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Description">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
-  <link href="themes/prism.css" rel="stylesheet" />
-  <!--矢量图库的title边的图-->
-  <link rel="icon" href="./assets/title.png" type="images/x-ico" />
-  
-  <link rel="stylesheet" href="./_media.css">
-</head>
-<body>
-  <div id="app"></div>
-  <script>
-    window.$docsify = {
-      name: '<h3>ChenJieYaYa</h3>',//左上角标题
-	  nameLink: '#/',//点击标题后跳转的页面：封面
-      repo: 'https://github.com/ChenJieYaYa/chenjie-blog.git',//GitHub挂件
-	  maxLevel: 3,//左侧目录渲染3级标题
-	  loadNavbar: true,//导航栏
-	  auto2top: true,//切换页面后是否自动跳转到页面顶部
-	  //relativePath: true,//启用相对路径
-	  coverpage: true,//封面，从_coverpage.md中加载
-	  onlyCover: true,//只在访问主页时加载封面
-	  themeColor: '#2185d5',//主题颜色:蓝色
-	  executeScript: true,//执行页面上的脚本，仅解析第一个脚本标记，如果存在Vue，则默认情况下将启用它
-	  mergeNavbar: true,//小屏设备下合并导航栏到侧边栏
-	  topMargin: 60,//正文到顶部的距离
-	  
-	  //搜索，配合js
-	  search: {
-        maxAge: 86400000,//过期时间，默认一天
-        paths: 'auto',
-        placeholder: '🔍search',//默认提示
-        noData: 'No Result',//没有查到结果提示
-        depth: 6//标题深度1-6
-	  },
-	  
-	  //代码复制提示
-	  copyCode: {
-		buttonText : '📃',
-		errorText  : 'NO',
-		successText: 'OK'
-	  },
-	  
-	  //字数统计
-	  count:{
-		countable: true,
-        fontsize: '0.9em',
-        color: 'rgb(90,90,90)',
-        language: 'chinese'
-	  },
-	  
-	  formatUpdated: '{YYYY}/{MM}/{DD} {HH}:{mm}',//文件的更新的日期的格式
-	  //插件
-	  plugins: [
-        function (hook, vm) {
-          hook.beforeEach(function (html) {//每次解析MD文档之前调用一次
-            const url = 'https://github.com/ChenJieYaYa/chenjie-blog/blob/master/' + vm.route.file;
-            const editHtml = '[📝 EDIT DOCUMENT](' + url + ')\n';
-            return editHtml
-              + html
-              + '\n----\n'
-              + '> Last Modified {docsify-updated} '
-          })
-        },
-		function (hook) {
-          const footer = [//添加一个脚注件的每一页
-            '<footer>',
-            '<span>ChenJie &copy;2022. 每天一小步</span>',
-            '</footer>'
-          ].join('');
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+    <link href="themes/prism.css" rel="stylesheet" />
 
-          hook.afterEach(function (html) {//每次解析 Markdown 文件后调用
-            return html + footer;
-          });
+    <title>ChenJieYaYa</title>
+    <!--矢量图库的title边的图-->
+    <link rel="icon" href="./assets/title.png" type="images/x-ico" />
+
+    <link rel="stylesheet" href="./_media.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/javascript">
+        //
+        $(document).ready(function () {
+            $.goup({
+                trigger: 100,
+                bottomOffset: 32,
+                locationOffset: 32,
+                //title: 'TOP',
+                titleAsText: true
+            });
+        });
+    </script>
+    <script>
+        var jsResources = '<scr' + 'ipt src="//unpkg.com/vue/dist/vue.js"></scr' + 'ipt>'
+        var cssResources = '@import url("//cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css");'
+        var bootCode = 'var globalVariable = "leon"'
+        var globalVariable = "leon"
+
+        window.$docsify = {
+            //封面
+            coverpage: true,//封面，从_coverpage.md中加载
+            onlyCover: true,//只在访问主页时加载封面
+
+            //左侧：搜索+标题+目录
+            search: {//搜索，配合js
+                maxAge: 86400000,//过期时间，默认一天
+                paths: 'auto',
+                placeholder: '🔍search',//默认提示
+                noData: 'No Result',//没有查到结果提示
+                depth: 6//标题深度1-6
+            },
+            name: '<h3>ChenJieYaYa</h3>',//左上角标题
+            nameLink: '#/',//点击标题后跳转的页面：封面
+            maxLevel: 4,//左侧目录渲染3级标题
+
+            //导航栏
+            loadNavbar: false,//加载默认文件_navbar.md
+            mergeNavbar: true,//小屏设备下合并导航栏到侧边栏
+
+            //页面
+            auto2top: true,//切换页面后是否自动跳转到页面顶部
+            themeColor: '#2185d5',//主题颜色:蓝色
+            topMargin: 60,//正文到顶部的距离
+            executeScript: true,//执行页面上的脚本，仅解析第一个脚本标记，如果存在Vue，则默认情况下将启用它
+            copyCode: {//代码复制提示
+                buttonText : '📃',
+                errorText  : 'NO',
+                successText: 'OK'
+            },
+            //repo: 'https://github.com/njleonzhang/docsify-demo-box-vue',
+            count:{//字数统计
+                countable: true,
+                fontsize: '0.9em',
+                color: 'rgb(90,90,90)',
+                language: 'chinese'
+            },
+            formatUpdated: '{YYYY}/{MM}/{DD} {HH}:{mm}',//文件的更新的日期的格式
+            plugins: [
+                //DemoBoxVue.create(jsResources, cssResources, bootCode),
+                function (hook,vm) {//页脚
+                    hook.beforeEach(function (html) {//每次解析MD文档之前调用一次
+                        return  html + '\n----\n'
+                            + '<div style="display: flex;justify-content: space-between;color: rgb(90,90,90);font-size: 0.9em">'
+                            + '<span>Last Modified {docsify-updated}</span>'
+                            + '<span>ChenJie &copy;2022. 每天一小步</span>'
+                            + '</div>'
+                    })
+                }
+            ],
         }
-      ],
-    }
-  </script>
-  <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
-  <!-- 外联JS，由src引入 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/external-script.min.js"></script>
-  <!-- emoji表情 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
-  <!-- 搜索 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <!-- 图片压缩 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  <!-- 代码复制 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
-  <!-- 字数统计 -->
-  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
-  <!-- 代码块中对应代码高亮 -->
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-php.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-java.min.js"></script>
-  <!-- 回到顶部 -->
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.js"></script>
-  <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.goup.js"></script>
-  <script type="text/javascript">
-	//
-    $(document).ready(function () {
-      $.goup({
-        trigger: 100,
-        bottomOffset: 32,
-        locationOffset: 32,
-        //title: 'TOP',
-        titleAsText: true
-      });
-    });
-  </script>
-</body>
+    </script>
+
+    <!-- Docsify v4 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+    <!-- 外联JS -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/external-script.min.js"></script>
+    <!-- emoji表情 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+    <!-- 搜索 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <!-- 图片缩放 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+    <!-- 代码复制 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+    <!--代码及时预览-->
+    <script src="//unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/docsify-demo-box-vue@2.7.14}/dist/docsify-demo-box-vue.min.js"></script>
+    <!-- 字数统计 -->
+    <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+    <!-- 代码块中对应代码高亮 -->
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-php.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-java.min.js"></script>
+    <!-- 回到顶部 -->
+    <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.js"></script>
+    <script src="https://knowledgeimagebed.oss-cn-hangzhou.aliyuncs.com/docsify/jquery.goup.js"></script>
+  </body>
 </html>
